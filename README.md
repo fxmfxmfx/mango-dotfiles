@@ -138,6 +138,10 @@ Install with backups for overwritten files:
 ./scripts/install.sh
 ```
 
+If `~/Colloid-gtk-theme/install.sh` exists, the installer also applies the
+Colloid GTK theme with `--tweaks black rimless`. Use `--no-theme` to skip that
+step.
+
 Run Mango from a TTY with:
 
 ```sh

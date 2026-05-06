@@ -7,6 +7,8 @@ target_home=${HOME:?HOME is not set}
 backup_root=
 dry_run=0
 skip_backup=0
+install_theme=1
+theme_installer=${GTK_THEME_INSTALLER:-"$HOME/Colloid-gtk-theme/install.sh"}
 
 usage() {
     cat <<'EOF'
@@ -15,11 +17,13 @@ Usage: ./scripts/install.sh [options]
 Options:
   --dry-run       Show what would be installed without changing files.
   --no-backup     Overwrite existing files without moving them to a backup.
+  --no-theme      Skip GTK theme installation.
   --home PATH     Install into PATH instead of $HOME.
   -h, --help      Show this help.
 
 Environment:
   DOTFILES_BACKUP_DIR  Backup directory for overwritten files.
+  GTK_THEME_INSTALLER   Path to Colloid gtk-theme install.sh.
 EOF
 }
 
@@ -30,6 +34,9 @@ while [ "$#" -gt 0 ]; do
             ;;
         --no-backup)
             skip_backup=1
+            ;;
+        --no-theme)
+            install_theme=0
             ;;
         --home)
             shift
@@ -94,6 +101,26 @@ copy_file() {
     printf 'install %s\n' "$dst"
 }
 
+install_gtk_theme() {
+    [ "$install_theme" -eq 1 ] || return
+
+    if [ "$dry_run" -eq 1 ]; then
+        if [ -x "$theme_installer" ]; then
+            printf 'would install Colloid GTK theme with %s --tweaks black rimless\n' "$theme_installer"
+        else
+            printf 'would skip Colloid GTK theme: installer not found at %s\n' "$theme_installer"
+        fi
+        return
+    fi
+
+    if [ ! -x "$theme_installer" ]; then
+        printf 'skip Colloid GTK theme: installer not found at %s\n' "$theme_installer"
+        return
+    fi
+
+    "$theme_installer" --tweaks black rimless
+}
+
 for root in "$repo_dir"/.[!.]* "$repo_dir"/..?* "$repo_dir"/Wallpaper; do
     [ -e "$root" ] || continue
 
@@ -108,6 +135,8 @@ for root in "$repo_dir"/.[!.]* "$repo_dir"/..?* "$repo_dir"/Wallpaper; do
         copy_file "$rel_path"
     done
 done
+
+install_gtk_theme
 
 if [ "$dry_run" -eq 0 ] && [ "$skip_backup" -eq 0 ]; then
     printf 'backup directory: %s\n' "$backup_root"
