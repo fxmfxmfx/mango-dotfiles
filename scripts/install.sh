@@ -162,6 +162,13 @@ install_gtk_theme() {
 
     if [ "$dry_run" -eq 1 ]; then
         printf 'would ask to install Colloid GTK theme with --tweaks black rimless\n'
+        if [ -n "$theme_installer" ]; then
+            printf 'would use Colloid installer %s\n' "$theme_installer"
+        elif [ -x "$theme_source/install.sh" ]; then
+            printf 'would use local Colloid checkout %s\n' "$theme_source"
+        else
+            printf 'would clone %s\n' "$theme_repo"
+        fi
         return
     fi
 
@@ -175,17 +182,21 @@ install_gtk_theme() {
             printf 'missing Colloid installer: %s\n' "$theme_installer" >&2
             return 1
         fi
+        printf 'install Colloid GTK theme from %s\n' "$theme_installer"
         HOME=$target_home "$theme_installer" --tweaks black rimless
         return
     fi
 
     if [ -x "$theme_source/install.sh" ]; then
+        printf 'install Colloid GTK theme from %s\n' "$theme_source"
         HOME=$target_home "$theme_source/install.sh" --tweaks black rimless
         return
     fi
 
     temp_dir=$(mktemp -d)
+    printf 'clone %s\n' "$theme_repo"
     git clone --depth 1 "$theme_repo" "$temp_dir/Colloid-gtk-theme"
+    printf 'install Colloid GTK theme with --tweaks black rimless\n'
     HOME=$target_home "$temp_dir/Colloid-gtk-theme/install.sh" --tweaks black rimless
 }
 
@@ -196,6 +207,11 @@ install_icon_theme() {
 
     if [ "$dry_run" -eq 1 ]; then
         printf 'would ask to install Goldy-Dark-Icons\n'
+        if [ -d "$icons_source/Goldy Icons Themes/Goldy-Dark-Icons" ]; then
+            printf 'would use local Goldy checkout %s\n' "$icons_source"
+        else
+            printf 'would clone %s\n' "$icons_repo"
+        fi
         return
     fi
 
@@ -209,6 +225,7 @@ install_icon_theme() {
 
     if [ ! -d "$icon_src" ]; then
         temp_dir=$(mktemp -d)
+        printf 'clone %s\n' "$icons_repo"
         git clone --depth 1 "$icons_repo" "$temp_dir/Goldy-Plasma-Themes"
         icon_src=$temp_dir/Goldy-Plasma-Themes/$icon_rel
     fi

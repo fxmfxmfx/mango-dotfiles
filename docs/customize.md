@@ -26,6 +26,20 @@ The bar and workspace click actions are pinned to `DP-1`. Replace that output in
 The workspace script reads `YAMBAR_MANGO_OUTPUT`, but the yambar config still
 needs the output name written in the click actions.
 
+To replace the primary output name before installing, use:
+
+```sh
+old=DP-1
+new=eDP-1
+sed -i "s/$old/$new/g" \
+  .config/mango/conf.d/00-monitors.conf \
+  .config/mango/conf.d/00-monitors.conf.example \
+  .config/yambar/config.yml \
+  .config/yambar/config.yml.example \
+  .config/yambar/scripts/workspaces.sh \
+  .local/bin/layout.sh
+```
+
 ## Browser And Apps
 
 Application key binds live in `.config/mango/conf.d/30-binds-apps.conf`.

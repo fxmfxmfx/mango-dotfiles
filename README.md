@@ -11,12 +11,16 @@ git clone https://github.com/fxmfxmfx/mango-dotfiles.git
 cd mango-dotfiles
 ./scripts/check-deps.sh
 ./scripts/install.sh --dry-run
+# If your primary output is not DP-1, apply the sed example in docs/customize.md.
+# Edit .config/mango/conf.d/00-monitors.conf if your monitor layout differs.
 ./scripts/install.sh
 ```
 
 This repo mirrors `$HOME` for dot directories such as `.config` and `.local`.
 The installer backs up overwritten files by default and asks whether to install
-the Colloid GTK theme and Goldy icon theme.
+the Colloid GTK theme and Goldy icon theme. The dry run shows what would be
+copied and whether optional theme/icon installs would use local sources or clone
+their upstream repositories.
 
 Run Mango from a TTY with:
 

@@ -20,15 +20,31 @@ find_portal() {
     return 1
 }
 
+portal_is_running() {
+    name=$1
+
+    if ! command -v pgrep >/dev/null 2>&1; then
+        return 1
+    fi
+
+    pgrep -f "(^|/)$name([[:space:]]|$)" >/dev/null 2>&1
+}
+
 start_portal() {
     name=$1
     shift
+
+    if portal_is_running "$name"; then
+        printf 'running %s\n' "$name"
+        return 0
+    fi
 
     binary=$(find_portal "$name" "$@") || {
         printf 'missing %s\n' "$name" >&2
         return 1
     }
 
+    printf 'start %s\n' "$name"
     "$binary" &
 }
 

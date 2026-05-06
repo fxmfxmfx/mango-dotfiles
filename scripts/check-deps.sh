@@ -57,7 +57,6 @@ pavucontrol
 doas
 tty-clock
 neo
-curl
 make
 gcc
 "
@@ -67,12 +66,15 @@ missing=0
 check_command() {
     name="$1"
     label="$2"
+    required="${3:-1}"
 
     if command -v "$name" >/dev/null 2>&1; then
         printf 'ok      %s %s\n' "$label" "$name"
     else
         printf 'missing %s %s\n' "$label" "$name"
-        missing=1
+        if [ "$required" -eq 1 ]; then
+            missing=1
+        fi
     fi
 }
 
@@ -111,12 +113,14 @@ check_portal() {
 }
 
 for command_name in $required_commands; do
-    check_command "$command_name" "required"
+    check_command "$command_name" "required" 1
 done
 
 for command_name in $optional_commands; do
-    check_command "$command_name" "optional"
+    check_command "$command_name" "optional" 0
 done
+
+check_command curl "optional (fisher)" 0
 
 check_portal xdg-desktop-portal /usr/libexec/xdg-desktop-portal /usr/lib/xdg-desktop-portal
 check_portal xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk /usr/lib/xdg-desktop-portal-gtk
