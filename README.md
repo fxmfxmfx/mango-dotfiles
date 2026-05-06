@@ -1,6 +1,6 @@
 # Mango Dotfiles
 
-Personal MangoWM dotfiles for Gentoo GNU/Linux.
+Personal [MangoWM](https://github.com/mangowm/mango) dotfiles for Gentoo GNU/Linux.
 
 ![MangoWM desktop](screenshots/image1.png)
 
