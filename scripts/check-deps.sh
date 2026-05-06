@@ -58,8 +58,6 @@ doas
 tty-clock
 neo
 curl
-jq
-socat
 make
 gcc
 "

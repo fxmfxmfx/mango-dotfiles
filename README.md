@@ -14,6 +14,17 @@ cd mango-dotfiles
 ./scripts/install.sh
 ```
 
+This repo mirrors `$HOME` for dot directories such as `.config` and `.local`.
+The installer backs up overwritten files by default. If
+`~/Colloid-gtk-theme/install.sh` exists, it also applies the Colloid GTK theme
+with `--tweaks black rimless`; use `--no-theme` to skip that step.
+
+Run Mango from a TTY with:
+
+```sh
+~/.local/bin/start-mango.sh
+```
+
 The setup is intentionally not distro-neutral. It assumes MangoWM, GNU userland,
 Wayland tooling, `fish` as the interactive shell, and xdg-desktop-portal binaries
 in `/usr/libexec`.
@@ -53,6 +64,16 @@ in `/usr/libexec`.
 
 ## Dependencies
 
+Run the checker first:
+
+```sh
+./scripts/check-deps.sh
+```
+
+It is the source of truth for this setup. If it reports everything you need as
+`ok`, you usually do not need to audit this list by hand. The list below is here
+mainly so missing tools have links and are easier to install.
+
 ### Mango Session
 
 - `mango`
@@ -65,15 +86,16 @@ in `/usr/libexec`.
 - `xdg-desktop-portal-wlr`
 - `xdg-desktop-portal-gtk`
 - [`foot`](https://github.com/DanteAlighierin/foot)
-- `footclient`
 - [`fuzzel`](https://codeberg.org/dnkl/fuzzel)
 - [`awww`](https://github.com/NotAShelf/awww)
-- `awww-daemon`
 - [`yambar`](https://github.com/neonkore/yambar)
 - [`dunst`](https://github.com/dunst-project/dunst)
 - `xsettingsd`
 
 ### Script Dependencies
+
+These are mostly command-line tools used by helper scripts. Prefer
+`./scripts/check-deps.sh` over manually reading this section.
 
 - `bash`
 - GNU `coreutils`
@@ -97,9 +119,6 @@ in `/usr/libexec`.
 - `thunar`
 - `librewolf`
 - `pavucontrol`
-- `curl`
-- `jq`
-- `socat`
 
 ### Shell And Editor
 
@@ -123,50 +142,13 @@ in `/usr/libexec`.
 
 ### UI And Themes
 
-- `DejaVu Sans`
-- `DejaVu Sans Mono`
-- `Symbols Nerd Font Mono`
+- [`DejaVu Sans`](https://dejavu-fonts.github.io/)
+- [`DejaVu Sans Mono`](https://dejavu-fonts.github.io/)
+- [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/)
 - [`Colloid-Dark`](https://github.com/vinceliuice/Colloid-gtk-theme)
 - [Colloid GTK theme installer](https://github.com/vinceliuice/Colloid-gtk-theme) at `~/Colloid-gtk-theme/install.sh` if you want
   `./scripts/install.sh` to install it with `--tweaks black rimless`
 - [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
-
-## Install
-
-This repo mirrors `$HOME` for dot directories such as `.config` and `.local`.
-Review the files first, then run a dry run:
-
-```sh
-./scripts/install.sh --dry-run
-```
-
-Install with backups for overwritten files:
-
-```sh
-./scripts/install.sh
-```
-
-If `~/Colloid-gtk-theme/install.sh` exists, the installer also applies the
-Colloid GTK theme with `--tweaks black rimless`. Use `--no-theme` to skip that
-step.
-
-Run Mango from a TTY with:
-
-```sh
-~/.local/bin/start-mango.sh
-```
-
-## Dependency Check
-
-Run:
-
-```sh
-./scripts/check-deps.sh
-```
-
-The script checks required commands plus the Gentoo `/usr/libexec` portal paths.
-Optional daily applications are reported too, but the core session can still start
-without some of them.
 
 For a more readable package list, see `docs/packages.md`.
 
@@ -183,15 +165,3 @@ For a more readable package list, see `docs/packages.md`.
 - `Ctrl+Print` - full screenshot to clipboard
 - `Super+Shift+S` - area screenshot to clipboard
 - `Super+Shift+D` - area screenshot through Swappy
-
-## Before Sharing Forks
-
-- Add screenshots to `screenshots/`.
-- Remove private machine-specific monitor, wallpaper, app and theme assumptions.
-- Do not commit generated state such as shell variables, Neovim plugin directories,
-  caches, logs or local histories.
-- Keep `lazy-lock.json` committed if you want reproducible Neovim plugin versions.
-
-## License
-
-MIT. See `LICENSE`.

@@ -15,10 +15,8 @@ repository and overlay, so treat this as the software surface the setup expects.
 - `xdg-desktop-portal-wlr`
 - `xdg-desktop-portal-gtk`
 - [`foot`](https://github.com/DanteAlighierin/foot)
-- `footclient`
 - [`fuzzel`](https://codeberg.org/dnkl/fuzzel)
 - [`awww`](https://github.com/NotAShelf/awww)
-- `awww-daemon`
 - [`yambar`](https://github.com/neonkore/yambar)
 - [`dunst`](https://github.com/dunst-project/dunst)
 - `xsettingsd`
@@ -47,9 +45,6 @@ repository and overlay, so treat this as the software surface the setup expects.
 - `thunar`
 - `librewolf`
 - `pavucontrol`
-- `curl`
-- `jq`
-- `socat`
 
 ## Shell And Editor
 
@@ -73,9 +68,9 @@ repository and overlay, so treat this as the software surface the setup expects.
 
 ## UI And Themes
 
-- `DejaVu Sans`
-- `DejaVu Sans Mono`
-- `Symbols Nerd Font Mono`
+- [`DejaVu Sans`](https://dejavu-fonts.github.io/)
+- [`DejaVu Sans Mono`](https://dejavu-fonts.github.io/)
+- [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/)
 - [`Colloid-Dark`](https://github.com/vinceliuice/Colloid-gtk-theme)
 - [Colloid GTK theme installer](https://github.com/vinceliuice/Colloid-gtk-theme) at `~/Colloid-gtk-theme/install.sh` if you want
   `./scripts/install.sh` to install it with `--tweaks black rimless`
@@ -89,5 +84,5 @@ Run:
 ./scripts/check-deps.sh
 ```
 
-The checker validates commands used by the session and scripts. It also checks
-Gentoo's `/usr/libexec` portal paths.
+The checker is the source of truth for required commands. It also checks Gentoo's
+`/usr/libexec` portal paths.
