@@ -1,6 +1,7 @@
 # Mango Dotfiles
 
 Personal [MangoWM](https://github.com/mangowm/mango) dotfiles for Gentoo GNU/Linux.
+MangoWM docs: [mangowm.github.io/docs](https://mangowm.github.io/docs).
 
 ![MangoWM desktop](screenshots/image1.png)
 
@@ -48,7 +49,8 @@ Wayland tooling and `fish` as the interactive shell.
 
 - Monitor config is machine-specific: `DP-1` at `1920x1080@170` and `HDMI-A-1`
   at `1920x1080@60`. Edit `.config/mango/conf.d/00-monitors.conf` before using
-  this on another machine.
+  this on another machine. See Mango's monitor docs:
+  [mangowm.github.io/docs/configuration/monitors](https://mangowm.github.io/docs/configuration/monitors).
 - Yambar is pinned to `DP-1` in `.config/yambar/config.yml`. The workspace script
   can read `YAMBAR_MANGO_OUTPUT`, but the bar config and click actions still need
   edits if your output has another name.

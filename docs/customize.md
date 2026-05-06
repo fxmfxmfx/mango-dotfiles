@@ -33,9 +33,7 @@ old=DP-1
 new=eDP-1
 sed -i "s/$old/$new/g" \
   .config/mango/conf.d/00-monitors.conf \
-  .config/mango/conf.d/00-monitors.conf.example \
   .config/yambar/config.yml \
-  .config/yambar/config.yml.example \
   .config/yambar/scripts/workspaces.sh \
   .local/bin/layout.sh
 ```
