@@ -1,4 +1,4 @@
--- Цвета редактора: Domino Still Life
+-- Editor colors: Domino Still Life
 local C = {
     bg = "#0c0c0c",
     fg = "#e6e6e6",
@@ -225,7 +225,7 @@ local function apply_editor_highlights()
     hl("AlphaFooter", { fg = C.olive_bright, italic = true })
 end
 
--- Базовые настройки
+-- Base settings
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.tabstop = 4
@@ -305,7 +305,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
 vim.keymap.set("v", "<C-M-c>", '"+y', { desc = "Copy selection to system clipboard" })
 vim.keymap.set("v", "\27[99;7u", '"+y', { desc = "Copy selection to system clipboard" })
 
--- Установка lazy.nvim
+-- Install lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -316,7 +316,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Плагины
+-- Plugins
 require("lazy").setup({
     {
         "goolord/alpha-nvim",
@@ -324,13 +324,13 @@ require("lazy").setup({
         require'alpha'.setup(require'alpha.themes.startify'.config)
         end,
     },
-    -- Статусбар
+    -- Statusline
     {
         "nvim-lualine/lualine.nvim",
         dependencies = { "nvim-tree/nvim-web-devicons" },
     },
 
-    -- Верхний бар (breadcrumbs) -- НОВОЕ
+    -- Top bar (breadcrumbs)
     {
         "utilyre/barbecue.nvim",
         dependencies = {
@@ -382,7 +382,7 @@ require("lazy").setup({
         end,
     },
 
-    -- Русская раскладка
+    -- Russian keyboard layout mapping
     {
         "Wansmer/langmapper.nvim",
         lazy = false,
@@ -392,7 +392,7 @@ require("lazy").setup({
         end
     },
 
-    -- Файловый менеджер
+    -- File manager
     {
         "nvim-tree/nvim-tree.lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -413,7 +413,7 @@ require("lazy").setup({
         end
     },
 
-    -- Подсветка синтаксиса и разбор кода
+    -- Syntax highlighting and code parsing
     {
         "nvim-treesitter/nvim-treesitter",
         branch = "master",
@@ -438,13 +438,13 @@ require("lazy").setup({
         end,
     },
 
-    -- Цветные пары скобок
+    -- Colored delimiter pairs
     {
         "HiPhish/rainbow-delimiters.nvim",
         event = { "BufReadPost", "BufNewFile" },
     },
 
-    -- Автодополнение
+    -- Completion
     {
         "hrsh7th/nvim-cmp",
         dependencies = {
@@ -472,7 +472,7 @@ require("lazy").setup({
 
 })
 
--- Настройка lualine
+-- Configure lualine
 require('lualine').setup {
     options = {
         theme = {
@@ -570,7 +570,7 @@ dashboard.section.footer.val = {
 
 alpha.setup(dashboard.config)
 
--- Заголовок (ASCII)
+-- Header (ASCII)
 dashboard.section.header.val = {
     "   ________  ________  ________  ________   ________  ________ ",
     "  ╱    ╱   ╲╱        ╲╱        ╲╱    ╱   ╲ ╱        ╲╱        ╲",
@@ -579,7 +579,7 @@ dashboard.section.header.val = {
     "╲__╱_____╱╲________╱╲________╱  ╲______╱ ╲________╱╲__╱__╱__╱  ",
 }
 
--- Кнопки
+-- Buttons
 dashboard.section.buttons.val = {
   dashboard.button("e", "new file", ":ene <BAR> startinsert<CR>"),
   dashboard.button("f", "find file", ":Telescope find_files<CR>"),

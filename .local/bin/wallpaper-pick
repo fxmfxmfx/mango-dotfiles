@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# wallpaper-pick.sh — выбор обоев через fuzzel + awww
+# Pick wallpapers with fuzzel and awww.
 
-# ─── Настройки ────────────────────────────────────────────────────────────────
+# Settings
 WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/Wallpaper}"
 
 SWWW_TRANSITION="${SWWW_TRANSITION:-fade}"
@@ -10,18 +10,18 @@ SWWW_FPS="${SWWW_FPS:-60}"
 
 FUZZEL_OPTS=(--dmenu --prompt '> ' --lines 8 --width 20)
 
-# ─── Проверки ─────────────────────────────────────────────────────────────────
+# Checks
 if ! command -v awww &>/dev/null; then exit 1; fi
 if ! command -v fuzzel &>/dev/null; then exit 1; fi
 if [[ ! -d "$WALLPAPER_DIR" ]]; then exit 1; fi
 
-# ─── Запуск демона (если не запущен) ──────────────────────────────────────────
+# Start the daemon if needed.
 if ! pgrep -x awww-daemon &>/dev/null; then
     awww-daemon &
     sleep 0.5
 fi
 
-# ─── Сбор обоев ───────────────────────────────────────────────────────────────
+# Collect wallpapers.
 mapfile -t WALLS < <(
     find "$WALLPAPER_DIR" \
         -type f \
@@ -33,7 +33,7 @@ mapfile -t WALLS < <(
 
 [[ ${#WALLS[@]} -eq 0 ]] && exit 1
 
-# ─── Выбор через fuzzel ───────────────────────────────────────────────────────
+# Select with fuzzel.
 SELECTED=$(printf '%s\n' "${WALLS[@]}" | fuzzel "${FUZZEL_OPTS[@]}")
 
 [[ -z "$SELECTED" ]] && exit 0
@@ -42,7 +42,7 @@ FULL_PATH="$WALLPAPER_DIR/$SELECTED"
 
 [[ ! -f "$FULL_PATH" ]] && exit 1
 
-# ─── Применяем обои ───────────────────────────────────────────────────────────
+# Apply the wallpaper.
 awww img "$FULL_PATH" \
     --transition-type "$SWWW_TRANSITION" \
     --transition-duration "$SWWW_DURATION" \

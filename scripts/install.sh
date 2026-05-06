@@ -94,7 +94,7 @@ copy_file() {
     printf 'install %s\n' "$dst"
 }
 
-for root in "$repo_dir"/.[!.]* "$repo_dir"/..?*; do
+for root in "$repo_dir"/.[!.]* "$repo_dir"/..?* "$repo_dir"/Wallpaper; do
     [ -e "$root" ] || continue
 
     case "$(basename -- "$root")" in

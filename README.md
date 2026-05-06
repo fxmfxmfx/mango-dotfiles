@@ -16,6 +16,7 @@ in `/usr/libexec`.
 - `.config/nvim` - Neovim config using lazy.nvim and pinned plugin lockfile
 - `.config/fish` - shell aliases and colors
 - `.local/bin` - helper scripts for screenshots, clipboard, layout, wallpaper and emoji picker
+- `Wallpaper` - wallpapers used by the wallpaper picker
 - `docs` - package list and customization notes for forks
 - `screenshots` - some screenshots
 
