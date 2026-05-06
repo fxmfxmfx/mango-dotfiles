@@ -72,9 +72,8 @@ be edited if those tools are not installed.
 GTK, foot, yambar, dunst, and fastfetch expect the fonts and themes listed in
 `docs/packages.md`.
 
-`scripts/install.sh` tries to run `~/Colloid-gtk-theme/install.sh --tweaks black
-rimless` when that installer exists. Override the path with `GTK_THEME_INSTALLER`
-or pass `--no-theme` to skip theme installation.
+`scripts/install.sh` asks whether to install the Colloid GTK theme and Goldy icon
+theme. Use `--no-theme` or `--no-icons` to skip those prompts.
 
 Check:
 

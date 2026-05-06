@@ -5,7 +5,7 @@ repository and overlay, so treat this as the software surface the setup expects.
 
 ## Mango Session
 
-- `mango`
+- [`mango`](https://github.com/mangowm/mango)
 - `dbus`
 - `dbus-run-session`
 - `pipewire`
@@ -64,7 +64,7 @@ repository and overlay, so treat this as the software surface the setup expects.
 - [`dust`](https://github.com/bootandy/dust)
 - `doas`
 - [`tty-clock`](https://github.com/xorg62/tty-clock)
-- [`neo`](https://github.com/deftclaw/neo-matrix)
+- [`neo`](https://github.com/st3w/neo)
 
 ## UI And Themes
 
@@ -72,8 +72,6 @@ repository and overlay, so treat this as the software surface the setup expects.
 - [`DejaVu Sans Mono`](https://dejavu-fonts.github.io/)
 - [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/)
 - [`Colloid-Dark`](https://github.com/vinceliuice/Colloid-gtk-theme)
-- [Colloid GTK theme installer](https://github.com/vinceliuice/Colloid-gtk-theme) at `~/Colloid-gtk-theme/install.sh` if you want
-  `./scripts/install.sh` to install it with `--tweaks black rimless`
 - [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
 
 ## Check

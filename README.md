@@ -15,9 +15,8 @@ cd mango-dotfiles
 ```
 
 This repo mirrors `$HOME` for dot directories such as `.config` and `.local`.
-The installer backs up overwritten files by default. If
-`~/Colloid-gtk-theme/install.sh` exists, it also applies the Colloid GTK theme
-with `--tweaks black rimless`; use `--no-theme` to skip that step.
+The installer backs up overwritten files by default and asks whether to install
+the Colloid GTK theme and Goldy icon theme.
 
 Run Mango from a TTY with:
 
@@ -54,8 +53,8 @@ in `/usr/libexec`.
   `WALLPAPER_DIR=/path/to/wallpapers`.
 - Portal autostart uses Gentoo's `/usr/libexec/xdg-desktop-portal-wlr` path.
   Other distros may place portal backends elsewhere.
-- Neovim bootstraps lazy.nvim from GitHub on first launch and Treesitter parsers
-  may need a C toolchain.
+- Neovim bootstraps [lazy.nvim](https://github.com/folke/lazy.nvim) from GitHub
+  on first launch and Treesitter parsers may need a C toolchain.
 - Fish aliases and functions assume the shell-experience tools listed below
   (`eza`, `bat`, `rg`, `fd`, `dust`, `btop`, `fastfetch`, `doas`, `tty-clock`,
   etc.). Install them first or edit `.config/fish/config.fish` and
@@ -76,7 +75,7 @@ mainly so missing tools have links and are easier to install.
 
 ### Mango Session
 
-- `mango`
+- [`mango`](https://github.com/mangowm/mango)
 - `dbus`
 - `dbus-run-session`
 - `pipewire`
@@ -138,7 +137,7 @@ These are mostly command-line tools used by helper scripts. Prefer
 - [`dust`](https://github.com/bootandy/dust)
 - `doas`
 - [`tty-clock`](https://github.com/xorg62/tty-clock)
-- [`neo`](https://github.com/deftclaw/neo-matrix)
+- [`neo`](https://github.com/st3w/neo)
 
 ### UI And Themes
 
@@ -146,8 +145,6 @@ These are mostly command-line tools used by helper scripts. Prefer
 - [`DejaVu Sans Mono`](https://dejavu-fonts.github.io/)
 - [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/)
 - [`Colloid-Dark`](https://github.com/vinceliuice/Colloid-gtk-theme)
-- [Colloid GTK theme installer](https://github.com/vinceliuice/Colloid-gtk-theme) at `~/Colloid-gtk-theme/install.sh` if you want
-  `./scripts/install.sh` to install it with `--tweaks black rimless`
 - [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
 
 For a more readable package list, see `docs/packages.md`.
