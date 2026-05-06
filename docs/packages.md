@@ -71,7 +71,7 @@ repository and overlay, so treat this as the software surface the setup expects.
 - [`DejaVu Sans`](https://dejavu-fonts.github.io/)
 - [`DejaVu Sans Mono`](https://dejavu-fonts.github.io/)
 - [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/)
-- [`Colloid-Dark`](https://github.com/vinceliuice/Colloid-gtk-theme)
+- [`Graphite-Dark`](https://github.com/vinceliuice/Graphite-gtk-theme)
 - [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
 
 ## Check

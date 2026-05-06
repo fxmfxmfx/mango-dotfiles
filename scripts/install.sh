@@ -10,9 +10,9 @@ skip_backup=0
 install_theme=1
 install_icons=1
 assume_yes=0
-theme_source=${GTK_THEME_DIR:-"$HOME/Colloid-gtk-theme"}
+theme_source=${GTK_THEME_DIR:-"$HOME/Graphite-gtk-theme"}
 theme_installer=${GTK_THEME_INSTALLER:-}
-theme_repo=https://github.com/vinceliuice/Colloid-gtk-theme.git
+theme_repo=https://github.com/vinceliuice/Graphite-gtk-theme.git
 icons_source=${GOLDY_ICONS_DIR:-"$HOME/Goldy-Plasma-Themes"}
 icons_repo=https://github.com/L4ki/Goldy-Plasma-Themes.git
 
@@ -23,7 +23,7 @@ Usage: ./scripts/install.sh [options]
 Options:
   --dry-run       Show what would be installed without changing files.
   --no-backup     Overwrite existing files without moving them to a backup.
-  --no-theme      Skip Colloid GTK theme prompt.
+  --no-theme      Skip Graphite GTK theme prompt.
   --no-icons      Skip Goldy icon theme prompt.
   -y, --yes       Install optional theme and icons without prompting.
   --home PATH     Install into PATH instead of $HOME.
@@ -31,8 +31,8 @@ Options:
 
 Environment:
   DOTFILES_BACKUP_DIR  Backup directory for overwritten files.
-  GTK_THEME_DIR         Path to a local Colloid-gtk-theme checkout.
-  GTK_THEME_INSTALLER   Path to a local Colloid install.sh.
+  GTK_THEME_DIR         Path to a local Graphite-gtk-theme checkout.
+  GTK_THEME_INSTALLER   Path to a local Graphite install.sh.
   GOLDY_ICONS_DIR       Path to a local Goldy-Plasma-Themes checkout.
 EOF
 }
@@ -161,43 +161,43 @@ install_gtk_theme() {
     fi
 
     if [ "$dry_run" -eq 1 ]; then
-        printf 'would ask to install Colloid GTK theme with --tweaks black rimless\n'
+        printf 'would ask to install Graphite GTK theme with --tweaks black rimless\n'
         if [ -n "$theme_installer" ]; then
-            printf 'would use Colloid installer %s\n' "$theme_installer"
+            printf 'would use Graphite installer %s\n' "$theme_installer"
         elif [ -x "$theme_source/install.sh" ]; then
-            printf 'would use local Colloid checkout %s\n' "$theme_source"
+            printf 'would use local Graphite checkout %s\n' "$theme_source"
         else
             printf 'would clone %s\n' "$theme_repo"
         fi
         return
     fi
 
-    if ! ask_yes_no "Install Colloid GTK theme?"; then
-        printf 'skip Colloid GTK theme\n'
+    if ! ask_yes_no "Install Graphite GTK theme?"; then
+        printf 'skip Graphite GTK theme\n'
         return
     fi
 
     if [ -n "$theme_installer" ]; then
         if [ ! -x "$theme_installer" ]; then
-            printf 'missing Colloid installer: %s\n' "$theme_installer" >&2
+            printf 'missing Graphite installer: %s\n' "$theme_installer" >&2
             return 1
         fi
-        printf 'install Colloid GTK theme from %s\n' "$theme_installer"
+        printf 'install Graphite GTK theme from %s\n' "$theme_installer"
         HOME=$target_home "$theme_installer" --tweaks black rimless
         return
     fi
 
     if [ -x "$theme_source/install.sh" ]; then
-        printf 'install Colloid GTK theme from %s\n' "$theme_source"
+        printf 'install Graphite GTK theme from %s\n' "$theme_source"
         HOME=$target_home "$theme_source/install.sh" --tweaks black rimless
         return
     fi
 
     temp_dir=$(mktemp -d)
     printf 'clone %s\n' "$theme_repo"
-    git clone --depth 1 "$theme_repo" "$temp_dir/Colloid-gtk-theme"
-    printf 'install Colloid GTK theme with --tweaks black rimless\n'
-    HOME=$target_home "$temp_dir/Colloid-gtk-theme/install.sh" --tweaks black rimless
+    git clone --depth 1 "$theme_repo" "$temp_dir/Graphite-gtk-theme"
+    printf 'install Graphite GTK theme with --tweaks black rimless\n'
+    HOME=$target_home "$temp_dir/Graphite-gtk-theme/install.sh" --tweaks black rimless
 }
 
 install_icon_theme() {

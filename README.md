@@ -18,7 +18,7 @@ cd mango-dotfiles
 
 This repo mirrors `$HOME` for dot directories such as `.config` and `.local`.
 The installer backs up overwritten files by default and asks whether to install
-the Colloid GTK theme and Goldy icon theme. The dry run shows what would be
+the Graphite GTK theme and Goldy icon theme. The dry run shows what would be
 copied and whether optional theme/icon installs would use local sources or clone
 their upstream repositories.
 
@@ -161,7 +161,7 @@ These are mostly command-line tools used by helper scripts. Prefer
 - [`DejaVu Sans`](https://dejavu-fonts.github.io/)
 - [`DejaVu Sans Mono`](https://dejavu-fonts.github.io/)
 - [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/)
-- [`Colloid-Dark`](https://github.com/vinceliuice/Colloid-gtk-theme)
+- [`Graphite-Dark`](https://github.com/vinceliuice/Graphite-gtk-theme)
 - [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
 
 For a more readable package list, see `docs/packages.md`.
