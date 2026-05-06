@@ -49,10 +49,19 @@ WALLPAPER_DIR=/path/to/wallpapers ~/.local/bin/wallpaper-pick
 
 ## Portal Paths
 
-Autostart uses Gentoo's `/usr/libexec` portal paths in
+Mango autostarts `.local/bin/start-portals.sh` from
 `.config/mango/conf.d/20-autostart.conf`.
 
-Other distros may put portal backends in another directory.
+The confusing part is path layout:
+
+- Gentoo commonly exposes portal backend binaries under `/usr/libexec`.
+- Most other distros usually expose them through `$PATH` or under `/usr/lib`.
+
+The helper checks those usual locations and starts the main portal, GTK backend
+and wlr backend when it can find them.
+
+`.config/xdg-desktop-portal/mango-portals.conf` keeps GTK as the default portal
+backend and uses the wlr backend for screenshot and screencast portals.
 
 ## Fish Shell
 

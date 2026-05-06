@@ -83,4 +83,5 @@ Run:
 ```
 
 The checker is the source of truth for required commands. It also checks Gentoo's
-`/usr/libexec` portal paths.
+`/usr/libexec` portal paths separately from common `/usr/lib` locations and
+regular `$PATH` command lookup.

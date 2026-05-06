@@ -25,8 +25,7 @@ Run Mango from a TTY with:
 ```
 
 The setup is intentionally not distro-neutral. It assumes MangoWM, GNU userland,
-Wayland tooling, `fish` as the interactive shell, and xdg-desktop-portal binaries
-in `/usr/libexec`.
+Wayland tooling and `fish` as the interactive shell.
 
 ## Contents
 
@@ -35,7 +34,8 @@ in `/usr/libexec`.
 - `.config/foot`, `.config/fuzzel`, `.config/dunst` - terminal, launcher and notifications
 - `.config/nvim` - Neovim config using lazy.nvim and pinned plugin lockfile
 - `.config/fish` - shell aliases and colors
-- `.local/bin` - helper scripts for screenshots, clipboard, layout, wallpaper and emoji picker
+- `.local/bin` - helper scripts for screenshots, clipboard, layout, portals,
+  wallpaper and emoji picker
 - `Wallpaper` - wallpapers used by the wallpaper picker
 - `docs` - package list and customization notes for forks
 - `screenshots` - some screenshots
@@ -51,8 +51,9 @@ in `/usr/libexec`.
 - `layout.sh` defaults to `DP-1`; override with `MANGO_OUTPUT=...` if needed.
 - Wallpaper picker reads images from `~/Wallpaper` by default. Override with
   `WALLPAPER_DIR=/path/to/wallpapers`.
-- Portal autostart uses Gentoo's `/usr/libexec/xdg-desktop-portal-wlr` path.
-  Other distros may place portal backends elsewhere.
+- Portal autostart uses `.local/bin/start-portals.sh`, which starts the main,
+  GTK and wlr portal binaries after checking normal `$PATH` lookup and common
+  backend locations.
 - Neovim bootstraps [lazy.nvim](https://github.com/folke/lazy.nvim) from GitHub
   on first launch and Treesitter parsers may need a C toolchain.
 - Fish aliases and functions assume the shell-experience tools listed below
@@ -72,6 +73,17 @@ Run the checker first:
 It is the source of truth for this setup. If it reports everything you need as
 `ok`, you usually do not need to audit this list by hand. The list below is here
 mainly so missing tools have links and are easier to install.
+
+Portal checks are split on purpose:
+
+- Gentoo: portal binaries commonly live under `/usr/libexec`, so the checker
+  reports those paths separately.
+- Most other distros: portal binaries are usually found through `$PATH` or under
+  `/usr/lib`.
+
+The important part is that each portal has at least one `ok` line. `notfound` for
+a Gentoo-only path is fine on a non-Gentoo system, and the reverse is fine on
+Gentoo.
 
 ### Mango Session
 
