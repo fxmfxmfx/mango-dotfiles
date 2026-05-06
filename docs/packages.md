@@ -6,19 +6,21 @@ repository and overlay, so treat this as the software surface the setup expects.
 ## Mango Session
 
 - `mango`
-- `mmsg`
 - `dbus`
+- `dbus-run-session`
 - `pipewire`
 - `pipewire-pulse`
 - `wireplumber`
 - `xdg-desktop-portal`
 - `xdg-desktop-portal-wlr`
 - `xdg-desktop-portal-gtk`
-- `foot`
-- `fuzzel`
-- `awww`
-- `yambar`
-- `dunst`
+- [`foot`](https://github.com/DanteAlighierin/foot)
+- `footclient`
+- [`fuzzel`](https://codeberg.org/dnkl/fuzzel)
+- [`awww`](https://github.com/NotAShelf/awww)
+- `awww-daemon`
+- [`yambar`](https://github.com/neonkore/yambar)
+- [`dunst`](https://github.com/dunst-project/dunst)
 - `xsettingsd`
 
 ## Script Dependencies
@@ -29,50 +31,55 @@ repository and overlay, so treat this as the software surface the setup expects.
 - `gawk` or compatible `awk`
 - `grep`
 - `sed`
+- `head`
 - `procps`/`psmisc` tools such as `pgrep` and `killall`
-- `wl-clipboard`
-- `cliphist`
-- `wayfreeze`
-- `grim`
-- `slurp`
-- `swappy`
-- `curl`
-- `jq`
-- `socat`
+- [`wl-clipboard`](https://github.com/bugaevc/wl-clipboard)
+- [`cliphist`](https://github.com/sentriz/cliphist)
+- [`wayfreeze`](https://github.com/Jappie3/wayfreeze)
+- [`grim`](https://gitlab.freedesktop.org/emersion/grim)
+- [`slurp`](https://github.com/emersion/slurp)
+- [`swappy`](https://github.com/jtheoof/swappy)
 
-## Daily Apps
+## Optional Apps And Tools
 
 - `mpv`
 - `imv`
 - `thunar`
 - `librewolf`
 - `pavucontrol`
+- `curl`
+- `jq`
+- `socat`
 
 ## Shell And Editor
 
-- `fish`
-- `fisher`
+- [`fish`](https://github.com/fish-shell/fish-shell)
+- [`fisher`](https://github.com/jorgebucaran/fisher)
 - `neovim`
 - `git`
 - `make`
 - `gcc` or another C compiler for Treesitter parsers
+- `python`
 - `btop`
 - `fastfetch`
-- `ripgrep`
-- `fd`
-- `eza`
-- `bat`
-- `dust`
+- [`ripgrep`](https://github.com/BurntSushi/ripgrep)
+- [`fd`](https://github.com/sharkdp/fd)
+- [`eza`](https://github.com/eza-community/eza)
+- [`bat`](https://github.com/sharkdp/bat)
+- [`dust`](https://github.com/bootandy/dust)
 - `doas`
-- `tty-clock`
+- [`tty-clock`](https://github.com/xorg62/tty-clock)
+- [`neo`](https://github.com/deftclaw/neo-matrix)
 
 ## UI And Themes
 
 - `DejaVu Sans`
 - `DejaVu Sans Mono`
 - `Symbols Nerd Font Mono`
-- `Colloid-Dark`
-- `Goldy-Dark-Icons`
+- [`Colloid-Dark`](https://github.com/vinceliuice/Colloid-gtk-theme)
+- [Colloid GTK theme installer](https://github.com/vinceliuice/Colloid-gtk-theme) at `~/Colloid-gtk-theme/install.sh` if you want
+  `./scripts/install.sh` to install it with `--tweaks black rimless`
+- [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
 
 ## Check
 

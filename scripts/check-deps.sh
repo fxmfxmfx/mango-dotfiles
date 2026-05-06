@@ -2,6 +2,7 @@
 set -eu
 
 required_commands="
+bash
 mango
 mmsg
 dbus-run-session
@@ -22,7 +23,6 @@ wayfreeze
 grim
 slurp
 swappy
-pavucontrol
 fish
 nvim
 git
@@ -37,12 +37,15 @@ xsettingsd
 awk
 grep
 sed
+head
 find
 sort
 timeout
+pgrep
 killall
 mktemp
 xdg-open
+python
 "
 
 optional_commands="
@@ -50,8 +53,10 @@ mpv
 imv
 thunar
 librewolf
+pavucontrol
 doas
 tty-clock
+neo
 curl
 jq
 socat
