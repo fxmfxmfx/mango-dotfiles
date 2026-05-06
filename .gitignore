@@ -1,0 +1,13 @@
+.cache/
+.codex
+.local/share/
+.local/state/
+.config/fish/fish_variables
+.config/nvim/lazy/
+.config/nvim/swap/
+.config/nvim/undo/
+.config/nvim/view/
+*.log
+*.bak
+*.swp
+*.swo
