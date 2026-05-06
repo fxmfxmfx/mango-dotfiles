@@ -4,6 +4,16 @@ Personal MangoWM dotfiles for Gentoo GNU/Linux.
 
 ![MangoWM desktop](screenshots/image1.png)
 
+## Quick Install
+
+```sh
+git clone https://github.com/fxmfxmfx/mango-dotfiles.git
+cd mango-dotfiles
+./scripts/check-deps.sh
+./scripts/install.sh --dry-run
+./scripts/install.sh
+```
+
 The setup is intentionally not distro-neutral. It assumes MangoWM, GNU userland,
 Wayland tooling, `fish` as the interactive shell, and xdg-desktop-portal binaries
 in `/usr/libexec`.
