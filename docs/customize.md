@@ -3,9 +3,13 @@
 These dotfiles are personal defaults, not a distro-neutral starter kit. Check
 these files before using them on another machine.
 
+Refer to MangoWM docs: [mangowm.github.io/docs](https://mangowm.github.io/docs).
+
 ## Monitors
 
 Edit `.config/mango/conf.d/00-monitors.conf`.
+To set this nice, check Mango`s monitor docs:
+[mangowm.github.io/docs/configuration/monitors](https://mangowm.github.io/docs/configuration/monitors).
 
 The current setup expects:
 
