@@ -38,7 +38,7 @@ new=eDP-1
 sed -i "s/$old/$new/g" \
   .config/mango/conf.d/00-monitors.conf \
   .config/rs-yambar/config.toml \
-  scripts/layout.sh
+  .local/bin/layout.sh
 ```
 
 ## Browser And Apps

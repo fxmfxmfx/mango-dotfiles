@@ -110,6 +110,10 @@ copy_file() {
         fi
     fi
 
+    if [ -L "$src" ] && [ ! -e "$src" ]; then
+        printf 'warning: %s is a dangling symlink, copied as-is\n' "$rel_path" >&2
+    fi
+
     cp -Pp -- "$src" "$dst"
     printf 'install %s\n' "$dst"
 }
@@ -158,7 +162,7 @@ install_gtk_theme() {
     fi
 
     if [ "$dry_run" -eq 1 ]; then
-        printf 'would ask to install Graphite GTK theme with --tweaks black rimless\n'
+        printf 'would ask to install Graphite GTK theme with --tweaks black rimless --libadwaita\n'
         if [ -n "$theme_installer" ]; then
             printf 'would use Graphite installer %s\n' "$theme_installer"
         elif [ -x "$theme_source/install.sh" ]; then
@@ -180,21 +184,21 @@ install_gtk_theme() {
             return 1
         fi
         printf 'install Graphite GTK theme from %s\n' "$theme_installer"
-        HOME=$target_home "$theme_installer" --tweaks black rimless
+        HOME=$target_home "$theme_installer" --tweaks black rimless --libadwaita
         return
     fi
 
     if [ -x "$theme_source/install.sh" ]; then
         printf 'install Graphite GTK theme from %s\n' "$theme_source"
-        HOME=$target_home "$theme_source/install.sh" --tweaks black rimless
+        HOME=$target_home "$theme_source/install.sh" --tweaks black rimless --libadwaita
         return
     fi
 
     temp_dir=$(mktemp -d)
     printf 'clone %s\n' "$theme_repo"
     git clone --depth 1 "$theme_repo" "$temp_dir/Graphite-gtk-theme"
-    printf 'install Graphite GTK theme with --tweaks black rimless\n'
-    HOME=$target_home "$temp_dir/Graphite-gtk-theme/install.sh" --tweaks black rimless
+    printf 'install Graphite GTK theme with --tweaks black rimless --libadwaita\n'
+    HOME=$target_home "$temp_dir/Graphite-gtk-theme/install.sh" --tweaks black rimless --libadwaita
 }
 
 install_icon_theme() {
@@ -237,11 +241,18 @@ install_icon_theme() {
 
 install_fonts() {
     font_dst=$target_home/.local/share/fonts
-    mkdir -p -- "$font_dst"
 
     if [ -d "$repo_dir/fonts" ]; then
-        printf 'install MxPlus IBM VGA font\n'
-        cp -R -- "$repo_dir/fonts/." "$font_dst/"
+        if [ "$dry_run" -eq 1 ]; then
+            printf 'would install MxPlus IBM VGA font to %s\n' "$font_dst"
+        else
+            mkdir -p -- "$font_dst"
+            printf 'install MxPlus IBM VGA font\n'
+            cp -R -- "$repo_dir/fonts/." "$font_dst/"
+            if command -v fc-cache >/dev/null 2>&1; then
+                fc-cache -f "$font_dst" >/dev/null 2>&1 || true
+            fi
+        fi
     fi
 
     if [ "$dry_run" -eq 1 ]; then
@@ -255,25 +266,40 @@ install_fonts() {
     fi
 
     nerd_font_dir=$(mktemp -d)
-    printf 'download Symbols Nerd Font Mono\n'
-    curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SymbolsNerdFontMono.ttf" \
-        -o "$nerd_font_dir/SymbolsNerdFontMono-Regular.ttf"
-
-    printf 'download Symbols Nerd Font\n'
-    curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SymbolsNerdFont.ttf" \
-        -o "$nerd_font_dir/SymbolsNerdFont-Regular.ttf"
+    printf 'download Symbols Nerd Font (NerdFontsSymbolsOnly.zip)\n'
+    curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/NerdFontsSymbolsOnly.zip" \
+        -o "$nerd_font_dir/NerdFontsSymbolsOnly.zip"
+    if command -v unzip >/dev/null 2>&1; then
+        unzip -o -q "$nerd_font_dir/NerdFontsSymbolsOnly.zip" -d "$nerd_font_dir"
+    elif command -v python3 >/dev/null 2>&1; then
+        python3 -m zipfile -e "$nerd_font_dir/NerdFontsSymbolsOnly.zip" "$nerd_font_dir"
+    else
+        python -m zipfile -e "$nerd_font_dir/NerdFontsSymbolsOnly.zip" "$nerd_font_dir"
+    fi
 
     printf 'download JetBrainsMono Nerd Font\n'
     curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz" \
         -o "$nerd_font_dir/JetBrainsMono.tar.xz"
     tar -xf "$nerd_font_dir/JetBrainsMono.tar.xz" -C "$nerd_font_dir"
 
+    symbols_ttf=$(find "$nerd_font_dir" -maxdepth 1 -name 'SymbolsNerdFont*.ttf' | wc -l)
+    jetbrains_ttf=$(find "$nerd_font_dir" -maxdepth 1 -name 'JetBrainsMono*.ttf' | wc -l)
+    if [ "$symbols_ttf" -eq 0 ] || [ "$jetbrains_ttf" -eq 0 ]; then
+        printf 'error: unexpected Nerd Fonts archive layout, no fonts installed\n' >&2
+        rm -rf -- "$nerd_font_dir"
+        return 1
+    fi
+
     mkdir -p -- "$font_dst/JetBrainsMonoNerd"
-    cp -R -- "$nerd_font_dir"/*.ttf "$font_dst/" 2>/dev/null || true
-    cp -R -- "$nerd_font_dir"/ttf/*.ttf "$font_dst/JetBrainsMonoNerd/" 2>/dev/null || true
+    find "$nerd_font_dir" -maxdepth 1 -name 'SymbolsNerdFont*.ttf' -exec cp -p -t "$font_dst/" {} +
+    find "$nerd_font_dir" -maxdepth 1 -name 'JetBrainsMono*.ttf' -exec cp -p -t "$font_dst/JetBrainsMonoNerd/" {} +
 
     rm -rf -- "$nerd_font_dir"
-    printf 'install Nerd Fonts to %s\n' "$font_dst"
+    if command -v fc-cache >/dev/null 2>&1; then
+        printf 'refresh font cache\n'
+        fc-cache -f "$font_dst" >/dev/null 2>&1 || true
+    fi
+    printf 'install %s Nerd Font files to %s\n' "$((symbols_ttf + jetbrains_ttf))" "$font_dst"
 }
 
 for root in "$repo_dir"/.[!.]* "$repo_dir"/..?* "$repo_dir"/Wallpaper; do
