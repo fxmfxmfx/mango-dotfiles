@@ -1,20 +1,30 @@
 #!/bin/sh
-OUT="${MANGO_OUTPUT:-${YAMBAR_MANGO_OUTPUT:-DP-1}}"
-CURRENT="$(mmsg -o "$OUT" -g -l | awk '{print $2}')"
+OUT="DP-1"
+CURRENT="$(
+    mmsg get monitor "$OUT" 2>/dev/null |
+        sed -n 's/.*"layout_symbol"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' |
+        sed -n '1p'
+)"
+
+set_layout() {
+    mmsg dispatch focusmon,"$OUT" >/dev/null 2>&1
+    mmsg dispatch setlayout,"$1" >/dev/null 2>&1
+}
+
 case "$CURRENT" in
     T)
-        mmsg -o "$OUT" -s -l G
+        set_layout grid
         ;;
     G)
-        mmsg -o "$OUT" -s -l VS
+        set_layout vertical_scroller
         ;;
     VS)
-        mmsg -o "$OUT" -s -l S
+        set_layout scroller
         ;;
     S)
-        mmsg -o "$OUT" -s -l T
+        set_layout tile
         ;;
     *)
-        mmsg -o "$OUT" -s -l T
+        set_layout tile
         ;;
 esac

@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
 case "$1" in
     full)
         wayfreeze \
@@ -14,7 +16,7 @@ killall wayfreeze
         wayfreeze \
           --after-freeze-cmd '
 sleep 0.1
-geo="$(slurp)" || {
+geo="$(slurp -b 00000066)" || {
     killall wayfreeze
     exit 1
 }
@@ -27,7 +29,7 @@ killall wayfreeze
         wayfreeze \
           --after-freeze-cmd '
 sleep 0.1
-geo="$(slurp -o)" || {
+geo="$(slurp -b 00000066 -o)" || {
     killall wayfreeze
     exit 1
 }
@@ -42,7 +44,7 @@ killall wayfreeze
 file="$(mktemp --suffix=.png)"
 sleep 0.1
 
-geo="$(slurp)" || {
+geo="$(slurp -b 00000066)" || {
     killall wayfreeze
     rm -f "$file"
     exit 1
