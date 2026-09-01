@@ -3,6 +3,7 @@ set -eu
 
 required_commands="
 bash
+zsh
 mango
 mmsg
 dbus-run-session

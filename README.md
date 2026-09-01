@@ -130,6 +130,7 @@ These are mostly command-line tools used by helper scripts. Prefer
 
 ### Shell And Editor
 
+- `zsh`
 - `nvim`
 - `git`
 - `make`
