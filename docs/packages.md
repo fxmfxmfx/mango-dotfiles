@@ -47,6 +47,7 @@ repository and overlay, so treat this as the software surface the setup expects.
 
 ## Shell And Editor
 
+- `zsh`
 - `nvim`
 - `git`
 - `make`
