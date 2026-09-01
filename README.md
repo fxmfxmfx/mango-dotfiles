@@ -44,6 +44,9 @@ Wayland tooling and a POSIX-compatible shell.
 
 ## Compatibility Notes
 
+- The `rs-yambar` binary in `.local/bin/` was compiled on a specific system and may
+  not run on yours due to glibc version differences. If it fails, rebuild from
+  source: https://github.com/fxmfxmfx/rs-yambar
 - Monitor config is machine-specific: `DP-1` at `1920x1080@170` and `HDMI-A-1`
   at `1920x1080@60`. Edit `.config/mango/conf.d/00-monitors.conf` before using
   this on another machine. See Mango's monitor docs:
