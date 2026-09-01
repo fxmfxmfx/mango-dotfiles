@@ -1,28 +1,126 @@
 #!/usr/bin/env bash
-# Pick wallpapers with fuzzel and awww.
+# wallpaper-pick.sh - image wallpapers via awww, video wallpapers via mpvpaper
 
-# Settings
 WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/Wallpaper}"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/wallpaper"
+URLS_FILE="$CONFIG_DIR/video-urls"
+TAB=$'\t'
 
 SWWW_TRANSITION="${SWWW_TRANSITION:-fade}"
 SWWW_DURATION="${SWWW_DURATION:-1}"
 SWWW_FPS="${SWWW_FPS:-60}"
 
-FUZZEL_OPTS=(--dmenu --prompt '> ' --lines 8 --width 20)
+rofi_menu() {
+    rofi -dmenu -no-custom -p 'wallpaper ' -l 8 \
+        -theme-str 'window { width: 240px; }'
+}
 
-# Checks
-if ! command -v awww &>/dev/null; then exit 1; fi
-if ! command -v fuzzel &>/dev/null; then exit 1; fi
-if [[ ! -d "$WALLPAPER_DIR" ]]; then exit 1; fi
+apply_theme() {
+    local path="$1"
 
-# Start the daemon if needed.
-if ! pgrep -x awww-daemon &>/dev/null; then
-    awww-daemon &
-    sleep 0.5
-fi
+    "$HOME/.config/rofi/scripts/walltheme.sh" "$path"
+    "$HOME/.config/rs-yambar/scripts/walltheme.sh" "$path"
+    "$HOME/.config/dunst/scripts/walltheme.sh" "$path"
+}
 
-# Collect wallpapers.
-mapfile -t WALLS < <(
+die() {
+    local message="$1"
+
+    if command -v notify-send &>/dev/null; then
+        notify-send "wallpaper" "$message"
+    fi
+
+    printf '%s\n' "$message" >&2
+    exit 1
+}
+
+url_entry_display() {
+    local line="$1"
+
+    if [[ "$line" == *"$TAB"* ]]; then
+        printf '%s\n' "${line%%"$TAB"*}"
+    else
+        printf '%s\n' "$line"
+    fi
+}
+
+url_entry_value() {
+    local line="$1"
+
+    if [[ "$line" == *"$TAB"* ]]; then
+        printf '%s\n' "${line#*$TAB}"
+    else
+        printf '%s\n' "$line"
+    fi
+}
+
+menu_item_display() {
+    local kind="$1"
+    local label="$2"
+    local value="$3"
+    printf '%s: %s\t%s\n' "$kind" "$label" "$value"
+}
+
+stop_mpvpaper() {
+    "$HOME/.local/bin/mpvpaper-stop"
+}
+
+if ! command -v awww &>/dev/null; then die "awww is not installed"; fi
+if ! command -v rofi &>/dev/null; then die "rofi is not installed"; fi
+if [[ ! -d "$WALLPAPER_DIR" ]]; then die "missing wallpaper dir: $WALLPAPER_DIR"; fi
+
+start_awww() {
+    if ! pgrep -x awww-daemon &>/dev/null; then
+        awww-daemon &
+        sleep 0.5
+    fi
+}
+
+set_image() {
+    local path="$1"
+
+    stop_mpvpaper
+    start_awww
+
+    awww img "$path" \
+        --transition-type "$SWWW_TRANSITION" \
+        --transition-duration "$SWWW_DURATION" \
+        --transition-fps "$SWWW_FPS"
+
+    mkdir -p "$CACHE_DIR"
+    printf '%s\n' "$path" > "$CACHE_DIR/current_wallpaper"
+    printf '%s\n' "image" > "$CACHE_DIR/current_wallpaper_mode"
+
+    apply_theme "$path"
+}
+
+set_video() {
+    local source="$1"
+
+    if ! command -v mpvpaper &>/dev/null; then die "mpvpaper is not installed"; fi
+    if [[ "$source" == http://* || "$source" == https://* ]]; then
+        if ! command -v yt-dlp &>/dev/null && ! command -v youtube-dl &>/dev/null; then
+            die "yt-dlp is needed for video URLs"
+        fi
+    fi
+
+    "$HOME/.local/bin/live-wallpaper" "$source"
+
+    case "$source" in
+        http://*|https://*)
+            ;;
+        *)
+            apply_theme "$source"
+            ;;
+    esac
+
+    mkdir -p "$CACHE_DIR"
+    printf '%s\n' "$source" > "$CACHE_DIR/current_wallpaper"
+    printf '%s\n' "video" > "$CACHE_DIR/current_wallpaper_mode"
+}
+
+mapfile -t IMAGES < <(
     find "$WALLPAPER_DIR" \
         -type f \
         \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \
@@ -31,21 +129,69 @@ mapfile -t WALLS < <(
         | sed "s|^$WALLPAPER_DIR/||"
 )
 
-[[ ${#WALLS[@]} -eq 0 ]] && exit 1
+mapfile -t VIDEOS < <(
+    find "$WALLPAPER_DIR" \
+        -type f \
+        \( -iname "*.mp4" -o -iname "*.webm" -o -iname "*.mkv" \
+           -o -iname "*.mov" -o -iname "*.avi" \) \
+        | sort \
+        | sed "s|^$WALLPAPER_DIR/||"
+)
 
-# Select with fuzzel.
-SELECTED=$(printf '%s\n' "${WALLS[@]}" | fuzzel "${FUZZEL_OPTS[@]}")
+if [[ -f "$URLS_FILE" ]]; then
+    mapfile -t URLS < <(
+        sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$URLS_FILE"
+    )
+else
+    URLS=()
+fi
+
+MENU=()
+
+for url in "${URLS[@]}"; do
+    MENU+=("$(menu_item_display "url" "$(url_entry_display "$url")" "$(url_entry_value "$url")")")
+done
+
+for wall in "${IMAGES[@]}"; do
+    MENU+=("image: $wall")
+done
+
+for wall in "${VIDEOS[@]}"; do
+    MENU+=("video: $wall")
+done
+
+[[ ${#MENU[@]} -eq 0 ]] && exit 1
+
+SELECTED=$(printf '%s\n' "${MENU[@]}" | rofi_menu)
 
 [[ -z "$SELECTED" ]] && exit 0
 
-FULL_PATH="$WALLPAPER_DIR/$SELECTED"
+SELECTED_LABEL=${SELECTED%%$'\t'*}
+SELECTED_VALUE=${SELECTED#*$'\t'}
+if [[ "$SELECTED" != *"$TAB"* ]]; then
+    SELECTED_VALUE="$SELECTED"
+fi
 
-[[ ! -f "$FULL_PATH" ]] && exit 1
-
-# Apply the wallpaper.
-awww img "$FULL_PATH" \
-    --transition-type "$SWWW_TRANSITION" \
-    --transition-duration "$SWWW_DURATION" \
-    --transition-fps "$SWWW_FPS"
-
-echo "$FULL_PATH" > "${XDG_CACHE_HOME:-$HOME/.cache}/current_wallpaper"
+case "$SELECTED_LABEL" in
+    image:\ *)
+        FULL_PATH="$WALLPAPER_DIR/${SELECTED_LABEL#image: }"
+        [[ ! -f "$FULL_PATH" ]] && exit 1
+        set_image "$FULL_PATH"
+        ;;
+    video:\ *)
+        FULL_PATH="$WALLPAPER_DIR/${SELECTED_LABEL#video: }"
+        [[ ! -f "$FULL_PATH" ]] && exit 1
+        set_video "$FULL_PATH"
+        ;;
+    url:\ *)
+        set_video "$SELECTED_VALUE"
+        ;;
+    http://*|https://*)
+        set_video "$SELECTED"
+        ;;
+    *)
+        FULL_PATH="$WALLPAPER_DIR/$SELECTED"
+        [[ ! -f "$FULL_PATH" ]] && exit 1
+        set_image "$FULL_PATH"
+        ;;
+esac

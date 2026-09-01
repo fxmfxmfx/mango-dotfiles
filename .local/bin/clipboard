@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-selection="$(cliphist list | fuzzel -d --prompt='Clipboard > ')"
+selection="$(cliphist list | rofi -dmenu -no-custom -p 'clipboard ')"
 [ -z "$selection" ] && exit 130
 
 printf '%s\n' "$selection" | cliphist decode | wl-copy
