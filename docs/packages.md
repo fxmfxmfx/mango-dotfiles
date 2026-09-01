@@ -47,6 +47,7 @@ repository and overlay, so treat this as the software surface the setup expects.
 
 ## Shell And Editor
 
+- `nvim`
 - `git`
 - `make`
 - `gcc` or another C compiler for Treesitter parsers
