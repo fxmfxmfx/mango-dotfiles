@@ -36,7 +36,7 @@ Wayland tooling and a POSIX-compatible shell.
 - `.config/mango` - MangoWM session, monitor rules, key binds and autostart
 - `.config/rs-yambar` - top bar with Mango workspace and keyboard-layout scripts
 - `.config/foot`, `.config/rofi`, `.config/dunst` - terminal, launcher and notifications
-- `.config/nvim` - Neovim config using lazy.nvim
+- `.config/nvim` - Neovim config using lazy.nvim (minimal on purpose)
 - `scripts` - helper scripts for screenshots, clipboard, layout, portals,
   wallpaper, emoji picker and more
 - `Wallpaper` - wallpapers used by the wallpaper picker
