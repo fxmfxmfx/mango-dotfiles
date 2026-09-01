@@ -256,15 +256,15 @@ install_fonts() {
 
     nerd_font_dir=$(mktemp -d)
     printf 'download Symbols Nerd Font Mono\n'
-    curl -fsSL "https://github.com/nerd-fonts/releases/latest/download/SymbolsNerdFontMono.ttf" \
+    curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SymbolsNerdFontMono.ttf" \
         -o "$nerd_font_dir/SymbolsNerdFontMono-Regular.ttf"
 
     printf 'download Symbols Nerd Font\n'
-    curl -fsSL "https://github.com/nerd-fonts/releases/latest/download/SymbolsNerdFont.ttf" \
+    curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/SymbolsNerdFont.ttf" \
         -o "$nerd_font_dir/SymbolsNerdFont-Regular.ttf"
 
     printf 'download JetBrainsMono Nerd Font\n'
-    curl -fsSL "https://github.com/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz" \
+    curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz" \
         -o "$nerd_font_dir/JetBrainsMono.tar.xz"
     tar -xf "$nerd_font_dir/JetBrainsMono.tar.xz" -C "$nerd_font_dir"
 
