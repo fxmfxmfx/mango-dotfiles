@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/wallpaper"
+URLS_FILE="$CONFIG_DIR/video-urls"
+TAB=$'\t'
+
+die() {
+    local message="$1"
+
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send "wallpaper" "$message"
+    fi
+
+    printf '%s\n' "$message" >&2
+    exit 1
+}
+
+command -v rofi >/dev/null 2>&1 || die "rofi is not installed"
+
+ask_url() {
+    local prompt="$1"
+    local url
+
+    url=$(printf '\n' | rofi -dmenu -p "$prompt" -l 1 -theme-str 'window { width: 700px; }')
+    [[ -z "$url" ]] && exit 0
+
+    case "$url" in
+        http://*|https://*) ;;
+        *) die "URL must start with http:// or https://" ;;
+    esac
+
+    printf '%s\n' "$url"
+}
+
+ask_name() {
+    local prompt="$1"
+    local name
+
+    name=$(printf '\n' | rofi -dmenu -p "$prompt" -l 1 -theme-str 'window { width: 700px; }')
+    name=${name//$'\t'/ }
+    printf '%s\n' "$name"
+}
+
+entry_url() {
+    local line="$1"
+
+    if [[ "$line" == *"$TAB"* ]]; then
+        printf '%s\n' "${line#*$TAB}"
+    else
+        printf '%s\n' "$line"
+    fi
+}
+
+url_exists() {
+    local needle="$1"
+    local line current_url
+
+    [[ -f "$URLS_FILE" ]] || return 1
+
+    while IFS= read -r line; do
+        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+        current_url=$(entry_url "$line")
+        [[ "$current_url" == "$needle" ]] && return 0
+    done < "$URLS_FILE"
+
+    return 1
+}
+
+add_url() {
+    local url="$1"
+    local name="$2"
+    local entry
+
+    mkdir -p "$CONFIG_DIR"
+    touch "$URLS_FILE"
+
+    if url_exists "$url"; then
+        notify-send "wallpaper" "URL already exists" >/dev/null 2>&1 || true
+        exit 0
+    fi
+
+    if [[ -n "$name" ]]; then
+        entry="${name}${TAB}${url}"
+    else
+        entry="$url"
+    fi
+
+    printf '%s\n' "$entry" >> "$URLS_FILE"
+    notify-send "wallpaper" "URL added" >/dev/null 2>&1 || true
+}
+
+remove_url() {
+    [[ -f "$URLS_FILE" ]] || exit 0
+
+    mapfile -t urls < <(sed '/^[[:space:]]*$/d; /^[[:space:]]*#/d' "$URLS_FILE")
+    [[ ${#urls[@]} -eq 0 ]] && exit 0
+
+    selected=$(printf '%s\n' "${urls[@]}" | rofi -dmenu -no-custom -p 'remove url ' -l 8 -theme-str 'window { width: 700px; }')
+    [[ -z "$selected" ]] && exit 0
+
+    tmp=$(mktemp)
+    grep -Fxv -- "$selected" "$URLS_FILE" > "$tmp" || true
+    mv "$tmp" "$URLS_FILE"
+    notify-send "wallpaper" "URL removed" >/dev/null 2>&1 || true
+}
+
+use_once() {
+    local url="$1"
+
+    if ! command -v yt-dlp >/dev/null 2>&1 && ! command -v youtube-dl >/dev/null 2>&1; then
+        die "yt-dlp is needed for video URLs"
+    fi
+
+    "$HOME/.local/bin/live-wallpaper" "$url"
+}
+
+ACTION=$(printf '%s\n' \
+    "add" \
+    "remove" \
+    "use once" \
+    | rofi -dmenu -no-custom -p 'url action ' -l 3 -theme-str 'window { width: 240px; }')
+
+case "$ACTION" in
+    add)
+        url=$(ask_url 'add url ')
+        name=$(ask_name 'add name (optional) ')
+        add_url "$url" "$name"
+        ;;
+    remove)
+        remove_url
+        ;;
+    "use once")
+        use_once "$(ask_url 'use url ')"
+        ;;
+    "")
+        exit 0
+        ;;
+    *)
+        die "unknown action: $ACTION"
+        ;;
+esac

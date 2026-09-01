@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WIDTH="${1:-1280}"
+HEIGHT="${2:-720}"
+FPS="${FPS:-18}"
+DURATION="${DURATION:-12}"
+OUT="${OUT:-$HOME/Wallpaper/aurora-flow.gif}"
+
+mkdir -p "$(dirname "$OUT")"
+
+ffmpeg -loglevel error -y \
+  -f lavfi \
+  -i "mandelbrot=s=${WIDTH}x${HEIGHT}:r=${FPS}" \
+  -vf "trim=duration=${DURATION},fps=${FPS},hue=h='2*PI*t/${DURATION}':s=2,eq=contrast=1.15:saturation=1.4:brightness=-0.03,gblur=sigma=1.2,split[s0][s1];[s0]palettegen=max_colors=96:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3" \
+  "$OUT"
+
+printf '%s\n' "$OUT"

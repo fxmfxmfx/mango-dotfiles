@@ -11,10 +11,9 @@ pipewire-pulse
 wireplumber
 foot
 footclient
-fuzzel
 awww
 awww-daemon
-yambar
+rs-yambar
 dunst
 wl-copy
 wl-paste
@@ -23,8 +22,6 @@ wayfreeze
 grim
 slurp
 swappy
-fish
-nvim
 git
 rg
 fd
@@ -33,7 +30,6 @@ eza
 dust
 btop
 fastfetch
-xsettingsd
 awk
 grep
 sed
@@ -120,7 +116,7 @@ for command_name in $optional_commands; do
     check_command "$command_name" "optional" 0
 done
 
-check_command curl "optional (fisher)" 0
+check_command curl "optional" 0
 
 check_portal xdg-desktop-portal /usr/libexec/xdg-desktop-portal /usr/lib/xdg-desktop-portal
 check_portal xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk /usr/lib/xdg-desktop-portal-gtk

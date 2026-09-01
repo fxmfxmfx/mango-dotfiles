@@ -15,11 +15,10 @@ repository and overlay, so treat this as the software surface the setup expects.
 - `xdg-desktop-portal-wlr`
 - `xdg-desktop-portal-gtk`
 - [`foot`](https://github.com/DanteAlighierin/foot)
-- [`fuzzel`](https://codeberg.org/dnkl/fuzzel)
+- [`rofi`](https://github.com/DaveDavenport/rofi)
 - [`awww`](https://github.com/NotAShelf/awww)
-- [`yambar`](https://github.com/neonkore/yambar)
+- [`rs-yambar`](https://github.com/fxmfxmfx/rs-yambar)
 - [`dunst`](https://github.com/dunst-project/dunst)
-- `xsettingsd`
 
 ## Script Dependencies
 
@@ -48,9 +47,6 @@ repository and overlay, so treat this as the software surface the setup expects.
 
 ## Shell And Editor
 
-- [`fish`](https://github.com/fish-shell/fish-shell)
-- [`fisher`](https://github.com/jorgebucaran/fisher)
-- `neovim`
 - `git`
 - `make`
 - `gcc` or another C compiler for Treesitter parsers

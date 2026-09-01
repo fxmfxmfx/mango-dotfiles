@@ -83,10 +83,7 @@ copy_file() {
     dst=$target_home/$rel_path
 
     case "$rel_path" in
-        .cache/*|.local/share/*|.local/state/*|.config/fish/fish_variables)
-            return
-            ;;
-        .config/nvim/lazy/*|.config/nvim/swap/*|.config/nvim/undo/*|.config/nvim/view/*)
+        .cache/*|.local/share/*|.local/state/*)
             return
             ;;
         *.log|*.bak|*.swp|*.swo)

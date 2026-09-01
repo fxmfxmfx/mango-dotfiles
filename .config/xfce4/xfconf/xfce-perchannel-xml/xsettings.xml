@@ -1,7 +1,0 @@
-<?xml version="1.1" encoding="UTF-8"?>
-
-<channel name="xsettings" version="1.0">
-  <property name="Net" type="empty">
-    <property name="IconThemeName" type="string" value="Goldy-Dark-Icons"/>
-  </property>
-</channel>

@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+set -eu
+
+rofi=${ROFI:-rofi}
+width=240
+runtime=${XDG_RUNTIME_DIR:-/tmp}
+[ -w "$runtime" ] || runtime=/tmp
+lock="$runtime/powermenu-${UID:-$(id -u)}"
+
+mkdir "$lock" 2>/dev/null || exit 0
+trap 'rmdir "$lock"' EXIT HUP INT TERM
+
+menu() {
+    if [ "$#" -ge 4 ]; then
+        "$rofi" -dmenu -no-custom -p "$1" -l "$2" \
+            -theme-str "window { width: ${3}px; }" -select "$4"
+    else
+        "$rofi" -dmenu -no-custom -p "$1" -l "$2" \
+            -theme-str "window { width: ${3}px; }"
+    fi
+}
+
+confirm() {
+    [ "$(printf '%s\n' cancel confirm | menu "$1? " 2 "$width" cancel || true)" = confirm ]
+}
+
+cmd=${1:-}
+[ -n "$cmd" ] || cmd=$(
+    printf '%s\n' lock suspend reboot 'power off' | menu 'session ' 4 "$width" || true
+)
+
+case "$cmd" in
+    lock|locked)
+        "$HOME/.local/bin/lock"
+        ;;
+    suspend)
+        confirm suspend && loginctl suspend
+        ;;
+    reboot)
+        confirm reboot && {
+            command -v loginctl >/dev/null 2>&1 && loginctl reboot ||
+            openrc-shutdown --reboot now
+        }
+        ;;
+    'power off')
+        confirm 'power off' && {
+            command -v loginctl >/dev/null 2>&1 && loginctl poweroff ||
+            openrc-shutdown --poweroff now
+        }
+        ;;
+    '')
+        ;;
+    *)
+        printf 'unknown action: %s\n' "$cmd" >&2
+        exit 1
+        ;;
+esac
