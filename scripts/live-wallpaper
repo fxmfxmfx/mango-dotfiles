@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VIDEO="${1:-$HOME/Wallpaper/live-wallpaper-fast.mp4}"
+OUTPUTS_STRING="${LIVE_WALLPAPER_OUTPUTS:-ALL}"
+read -r -a OUTPUTS <<< "$OUTPUTS_STRING"
+MPV_OPTS="no-audio loop background=color background-color=0.0745/0.0745/0.0745/1 profile=sw-fast hwdec=auto really-quiet"
+
+if [[ "$VIDEO" != http://* && "$VIDEO" != https://* && ! -f "$VIDEO" ]]; then
+    printf '%s\n' "Missing wallpaper video: $VIDEO" >&2
+    exit 1
+fi
+
+stop_mpvpaper() {
+    "$HOME/.local/bin/mpvpaper-stop"
+}
+
+stop_mpvpaper
+awww kill >/dev/null 2>&1 || true
+
+for output in "${OUTPUTS[@]}"; do
+    mpvpaper -f -o "$MPV_OPTS" "$output" "$VIDEO"
+done

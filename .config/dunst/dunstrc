@@ -1,30 +1,68 @@
 [global]
     monitor = 0
     follow = mouse
-    width = 300
-    height = 100
+
+    width = 340
+    height = (0, 180)
     origin = top-right
-    offset = 10x10
+    offset = (10, 10)
+    notification_limit = 5
+
     gap_size = 5
-    font = monospace 10
+    separator_height = 0
+    padding = 12
+    horizontal_padding = 14
+    text_icon_padding = 0
     frame_width = 1
-    frame_color = "#444444"
-    background = "#171717"
-    foreground = "#ffffff"
-    timeout = 3
+    corner_radius = 0
+
+    font = JetBrainsMono Nerd Font 12, Symbols Nerd Font Mono 12
+    line_height = 1
+    format = "<span foreground='#e6da94'>%s</span>\n%b"
+    alignment = left
+    vertical_alignment = center
+    rord_wrap = true
+    ellipsize = middle
+    markup = full
+
     icon_position = off
+    show_indicators = false
+    stack_duplicates = true
+    hide_duplicate_count = false
+    sort = update
+
+    background = "#141310ff"
+    foreground = "#e5e4dcff"
+    frame_color = "#e6da94ff"
+    separator_color = "#e6da94ff"
+    highlight = "#e6da94ff"
+
+    progress_bar = true
+    progress_bar_height = 8
+    progress_bar_frame_width = 1
+    progress_bar_min_width = 150
+    progress_bar_max_width = 280
+    progress_bar_corner_radius = 0
+
+    timeout = 3
 
 [urgency_low]
-    background = "#171717"
-    foreground = "#ffffff"
+    background = "#1b1b18ff"
+    foreground = "#a39d7bff"
+    frame_color = "#a39d7bff"
+    highlight = "#a39d7bff"
     timeout = 2
 
 [urgency_normal]
-    background = "#171717"
-    foreground = "ffffff"
+    background = "#141310ff"
+    foreground = "#e5e4dcff"
+    frame_color = "#e6da94ff"
+    highlight = "#e6da94ff"
     timeout = 3
 
 [urgency_critical]
-    background = "#171717"
-    foreground = "#ffffff"
+    background = "#141310ff"
+    foreground = "#e5e4dcff"
+    frame_color = "#d8a864ff"
+    highlight = "#d8a864ff"
     timeout = 0

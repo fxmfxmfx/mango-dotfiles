@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! pgrep -u "$(id -u)" -x mpvpaper >/dev/null 2>&1; then
+    exit 0
+fi
+
+pkill -u "$(id -u)" -x mpvpaper >/dev/null 2>&1 || true
+
+for _ in 1 2 3 4 5; do
+    if ! pgrep -u "$(id -u)" -x mpvpaper >/dev/null 2>&1; then
+        exit 0
+    fi
+    sleep 0.2
+done
+
+pkill -KILL -u "$(id -u)" -x mpvpaper >/dev/null 2>&1 || true

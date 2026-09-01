@@ -1,0 +1,186 @@
+configuration {
+    modi: "drun,run,window";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    terminal: "footclient";
+
+    drun-display-format: "{icon} {name}";
+    display-drun: "apps";
+    display-run: "run";
+    display-window: "win";
+
+    sidebar-mode: false;
+    sort: true;
+    sorting-method: "fzf";
+    matching: "fuzzy";
+
+    font: "JetBrainsMono Nerd Font 11";
+}
+
+* {
+    bg:          #141310ff;
+    bg-alt:      #1c1b17ff;
+    bg-soft:     #262521ff;
+    fg:          #e5e4dcff;
+    fg-dim:      #a39d7bff;
+    accent:      #e6da94ff;
+    urgent:      #d8a864ff;
+    border:      #33332dff;
+    transparent: #00000000;
+
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    width: 420px;
+    location: center;
+    anchor: center;
+
+    background-color: @bg;
+    border: 1px;
+    border-color: @border;
+    border-radius: 0px;
+
+    padding: 5px;
+}
+
+mainbox {
+    background-color: @bg;
+    spacing: 5px;
+}
+
+inputbar {
+    background-color: @bg-alt;
+    text-color: @fg;
+
+    border: 0px 0px 2px 0px;
+    border-color: @accent;
+
+    padding: 5px 7px;
+    spacing: 6px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    text-color: @accent;
+    background-color: @transparent;
+    padding: 0px 6px 0px 0px;
+}
+
+entry {
+    text-color: @fg;
+    background-color: @transparent;
+    placeholder: "run";
+    placeholder-color: @fg-dim;
+    cursor-color: @accent;
+    cursor-outline-color: @accent;
+    hide-cursor-on-empty: true;
+}
+
+listview {
+    background-color: @bg;
+    columns: 1;
+    lines: 12;
+    fixed-height: true;
+
+    spacing: 1px;
+    scrollbar: false;
+    cycle: true;
+    dynamic: true;
+    layout: vertical;
+    border: 2px dash 0px 0px;
+    border-color: @border;
+}
+
+element {
+    background-color: @transparent;
+    text-color: @fg-dim;
+
+    padding: 3px 6px;
+    spacing: 7px;
+
+    border: 0px 0px 0px 2px;
+    border-color: @transparent;
+}
+
+element normal.normal {
+    background-color: @transparent;
+    text-color: @fg-dim;
+}
+
+element alternate.normal {
+    background-color: @bg;
+    text-color: @fg-dim;
+}
+
+element selected.normal {
+    background-color: @bg-soft;
+    text-color: @fg;
+
+    border-color: @accent;
+}
+
+element normal.urgent {
+    background-color: @transparent;
+    text-color: @urgent;
+}
+
+element selected.urgent {
+    background-color: @bg-soft;
+    text-color: @urgent;
+
+    border-color: @urgent;
+}
+
+element-icon {
+    background-color: @transparent;
+    text-color: inherit;
+
+    size: 15px;
+    padding: 0px;
+}
+
+element-text {
+    background-color: @transparent;
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+mode-switcher {
+    background-color: @bg;
+    spacing: 1px;
+}
+
+button {
+    background-color: @bg-alt;
+    text-color: @fg-dim;
+
+    padding: 3px 8px;
+    border: 0px 0px 2px 0px;
+    border-color: @transparent;
+}
+
+button selected {
+    background-color: @bg-soft;
+    text-color: @fg;
+    border-color: @accent;
+}
+
+message {
+    background-color: @bg-alt;
+    text-color: @fg;
+    padding: 5px;
+}
+
+textbox {
+    text-color: @fg;
+    background-color: @transparent;
+}
+
+error-message {
+    background-color: @bg;
+    text-color: @urgent;
+    padding: 7px;
+}

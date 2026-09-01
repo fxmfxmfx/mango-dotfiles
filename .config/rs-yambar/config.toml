@@ -1,0 +1,104 @@
+[bar]
+height = 28
+position = "top"
+layer = "top"
+background = "#141310ff"
+foreground = "#e5e4dcff"
+font = "MxPlus IBM VGA 8x16 MidTilde:pixelsize=16, Symbols Nerd Font:pixelsize=13"
+spacing = 0
+left_spacing = 0
+center_spacing = 0
+right_spacing = 8
+margin = 8
+
+[[left]]
+type = "mango-workspaces"
+output = "DP-1"
+tag_count = 8
+labels = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+show_empty = true
+item_spacing = 0
+item_width = 21
+underline_size = 3
+underline_inset = 2
+active_foreground = "#141310ff"
+active_background = "#e6da94ff"
+occupied_foreground = "#e5e4dcff"
+occupied_underline = "#e6da94ff"
+empty_foreground = "#a39d7bff"
+
+[[center]]
+type = "foreign-toplevel"
+interval_ms = 500
+format = "{text}"
+hide_after_ms = 7000
+fade_ms = 600
+
+[[center.segments]]
+format = "{icon}"
+foreground = "#e6da94ff"
+
+[[center.segments]]
+format = "{text}"
+max-chars = 80
+
+[[right]]
+type = "script"
+name = "reminders"
+command = ["~/.config/rs-yambar/scripts/reminder-poller.sh"]
+mode = "poll"
+protocol = "yambar"
+interval_ms = 2000
+format = " {count}"
+style = { foreground = "#8f8f8fff", on_hover = "~/.config/rs-yambar/scripts/reminder.py" }
+
+[[right.segments]]
+format = ""
+foreground = "#e6da94ff"
+
+[[right.segments]]
+format = "{count} "
+foreground = "#e6da94ff"
+
+[[right]]
+type = "memory"
+interval_ms = 2500
+format = "{used:mb}M "
+
+[[right.segments]]
+format = " "
+foreground = "#e6da94ff"
+
+[[right.segments]]
+format = "{used:mb}M "
+
+[[right]]
+type = "pipewire"
+interval_ms = 1000
+format = "{icon}{text}"
+muted_text = "muted"
+
+[[right.segments]]
+format = "{icon}"
+foreground = "#e6da94ff"
+
+[[right.segments]]
+format = "{text}"
+
+[[right]]
+type = "clock"
+format = "{date} {time}"
+time_format = "%H:%M"
+date_format = "%d.%m"
+
+[[right.segments]]
+format = " "
+foreground = "#e6da94ff"
+
+[[right.segments]]
+format = "{date} "
+foreground = "#a39d7bff"
+
+[[right.segments]]
+format = "{time}"
+foreground = "#e6da94ff"

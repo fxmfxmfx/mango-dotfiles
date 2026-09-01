@@ -16,18 +16,18 @@ The current setup expects:
 - `DP-1` at `1920x1080@170`, positioned at `0,0`
 - `HDMI-A-1` at `1920x1080@60`, positioned at `-1920,0`
 
-Use `.config/mango/conf.d/00-monitors.conf.example` as a safer starting point.
+Use `.config/mango/conf.d/00-monitors.conf` as a starting point.
 
 ## Bar Output
 
-Edit `.config/yambar/config.yml`.
+Edit `.config/rs-yambar/config.toml`.
 
 The bar and workspace click actions are pinned to `DP-1`. Replace that output in:
 
 - `bar.monitor`
 - every `mmsg -o DP-1 ...` click action
 
-The workspace script reads `YAMBAR_MANGO_OUTPUT`, but the yambar config still
+The workspace script reads `YAMBAR_MANGO_OUTPUT`, but the rs-yambar config still
 needs the output name written in the click actions.
 
 To replace the primary output name before installing, use:
@@ -37,9 +37,8 @@ old=DP-1
 new=eDP-1
 sed -i "s/$old/$new/g" \
   .config/mango/conf.d/00-monitors.conf \
-  .config/yambar/config.yml \
-  .config/yambar/scripts/workspaces.sh \
-  .local/bin/layout.sh
+  .config/rs-yambar/config.toml \
+  scripts/layout.sh
 ```
 
 ## Browser And Apps
@@ -79,22 +78,9 @@ and wlr backend when it can find them.
 `.config/xdg-desktop-portal/mango-portals.conf` keeps GTK as the default portal
 backend and uses the wlr backend for screenshot and screencast portals.
 
-## Fish Shell
-
-Fish aliases and functions assume the shell-experience tools from
-`docs/packages.md`.
-
-Check:
-
-- `.config/fish/config.fish`
-- `.config/fish/functions`
-
-Aliases such as `cat=bat`, `ls=eza`, `grep=rg`, `find=fd`, and `du=dust` should
-be edited if those tools are not installed.
-
 ## Themes And Fonts
 
-GTK, foot, yambar, dunst, and fastfetch expect the fonts and themes listed in
+GTK, foot, rs-yambar, dunst, and fastfetch expect the fonts and themes listed in
 `docs/packages.md`.
 
 `scripts/install.sh` asks whether to install the Graphite GTK theme and Goldy
@@ -105,5 +91,5 @@ Check:
 - `.config/gtk-3.0/settings.ini`
 - `.config/gtk-4.0/settings.ini`
 - `.config/foot/foot.ini`
-- `.config/yambar/config.yml`
+- `.config/rs-yambar/config.toml`
 - `.config/dunst/dunstrc`

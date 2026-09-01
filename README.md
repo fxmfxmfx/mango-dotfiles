@@ -2,7 +2,7 @@
 
 Personal [MangoWM](https://github.com/mangowm/mango) dotfiles for Gentoo GNU/Linux.
 
-![MangoWM desktop](screenshots/image1.png)
+![MangoWM desktop](screenshots/screenshot.png)
 
 ## Quick Install
 
@@ -29,20 +29,17 @@ Run Mango from a TTY with:
 ```
 
 The setup is intentionally not distro-neutral. It assumes MangoWM, GNU userland,
-Wayland tooling and `fish` as the interactive shell.
+Wayland tooling and a POSIX-compatible shell.
 
 ## Contents
 
 - `.config/mango` - MangoWM session, monitor rules, key binds and autostart
-- `.config/yambar` - top bar with Mango workspace and keyboard-layout scripts
-- `.config/foot`, `.config/fuzzel`, `.config/dunst` - terminal, launcher and notifications
-- `.config/nvim` - Neovim config using lazy.nvim and pinned plugin lockfile
-- `.config/fish` - shell aliases and colors
-- `.local/bin` - helper scripts for screenshots, clipboard, layout, portals,
-  wallpaper and emoji picker
+- `.config/rs-yambar` - top bar with Mango workspace and keyboard-layout scripts
+- `.config/foot`, `.config/rofi`, `.config/dunst` - terminal, launcher and notifications
+- `scripts` - helper scripts for screenshots, clipboard, layout, portals,
+  wallpaper, emoji picker and more
 - `Wallpaper` - wallpapers used by the wallpaper picker
 - `docs` - package list and customization notes for forks
-- `screenshots` - some screenshots
 
 ## Compatibility Notes
 
@@ -50,21 +47,16 @@ Wayland tooling and `fish` as the interactive shell.
   at `1920x1080@60`. Edit `.config/mango/conf.d/00-monitors.conf` before using
   this on another machine. See Mango's monitor docs:
   [mangowm.github.io/docs/configuration/monitors](https://mangowm.github.io/docs/configuration/monitors).
-- Yambar is pinned to `DP-1` in `.config/yambar/config.yml`. The workspace script
-  can read `YAMBAR_MANGO_OUTPUT`, but the bar config and click actions still need
-  edits if your output has another name.
+- [rs-yambar](https://github.com/fxmfxmfx/rs-yambar) is pinned to `DP-1` in
+  `.config/rs-yambar/config.toml`. The workspace script can read
+  `YAMBAR_MANGO_OUTPUT`, but the bar config and click actions still need edits
+  if your output has another name.
 - `layout.sh` defaults to `DP-1`; override with `MANGO_OUTPUT=...` if needed.
 - Wallpaper picker reads images from `~/Wallpaper` by default. Override with
   `WALLPAPER_DIR=/path/to/wallpapers`.
 - Portal autostart uses `.local/bin/start-portals.sh`, which starts the main,
   GTK and wlr portal binaries after checking normal `$PATH` lookup and common
   backend locations.
-- Neovim bootstraps [lazy.nvim](https://github.com/folke/lazy.nvim) from GitHub
-  on first launch and Treesitter parsers may need a C toolchain.
-- Fish aliases and functions assume the shell-experience tools listed below
-  (`eza`, `bat`, `rg`, `fd`, `dust`, `btop`, `fastfetch`, `doas`, `tty-clock`,
-  etc.). Install them first or edit `.config/fish/config.fish` and
-  `.config/fish/functions` before using this setup.
 - See `docs/customize.md` for the files that usually need local edits.
 
 ## Dependencies
@@ -102,11 +94,10 @@ Gentoo.
 - `xdg-desktop-portal-wlr`
 - `xdg-desktop-portal-gtk`
 - [`foot`](https://github.com/DanteAlighierin/foot)
-- [`fuzzel`](https://codeberg.org/dnkl/fuzzel)
+- [`rofi`](https://github.com/DaveDavenport/rofi)
 - [`awww`](https://github.com/NotAShelf/awww)
-- [`yambar`](https://github.com/neonkore/yambar)
+- [`rs-yambar`](https://github.com/fxmfxmfx/rs-yambar)
 - [`dunst`](https://github.com/dunst-project/dunst)
-- `xsettingsd`
 
 ### Script Dependencies
 
@@ -138,9 +129,6 @@ These are mostly command-line tools used by helper scripts. Prefer
 
 ### Shell And Editor
 
-- [`fish`](https://github.com/fish-shell/fish-shell)
-- [`fisher`](https://github.com/jorgebucaran/fisher)
-- `neovim`
 - `git`
 - `make`
 - `gcc` or another C compiler for Treesitter parsers

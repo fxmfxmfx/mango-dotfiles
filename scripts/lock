@@ -1,0 +1,49 @@
+#!/usr/bin/env sh
+set -eu
+
+config_home=${XDG_CONFIG_HOME:-$HOME/.config}
+
+have() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+if have hyprlock; then
+    exec hyprlock
+fi
+
+if have swaylock; then
+    if [ -f "$config_home/swaylock/config" ]; then
+        exec swaylock --config "$config_home/swaylock/config"
+    fi
+
+    exec swaylock
+fi
+
+if have gtklock; then
+    if [ -f "$config_home/gtklock/config.ini" ]; then
+        exec gtklock --config "$config_home/gtklock/config.ini"
+    fi
+
+    exec gtklock
+fi
+
+if have waylock; then
+    exec waylock
+fi
+
+if have loginctl; then
+    if [ -n "${XDG_SESSION_ID:-}" ]; then
+        loginctl lock-session "$XDG_SESSION_ID" && exit 0
+    else
+        loginctl lock-session && exit 0
+    fi
+fi
+
+msg="no screen locker found: install hyprlock, swaylock, gtklock, or waylock"
+
+if have notify-send; then
+    notify-send "lock" "$msg"
+fi
+
+printf '%s\n' "$msg" >&2
+exit 127
