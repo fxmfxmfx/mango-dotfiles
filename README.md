@@ -151,9 +151,12 @@ These are mostly command-line tools used by helper scripts. Prefer
 
 - [`DejaVu Sans`](https://dejavu-fonts.github.io/)
 - [`DejaVu Sans Mono`](https://dejavu-fonts.github.io/)
-- [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/)
+- [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
+- [`JetBrainsMono Nerd Font`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`Graphite-Dark`](https://github.com/vinceliuice/Graphite-gtk-theme)
 - [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
+
+MxPlus IBM VGA 8x16 MidTilde font is included in `fonts/` directory.
 
 For a more readable package list, see `docs/packages.md`.
 
