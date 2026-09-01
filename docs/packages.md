@@ -66,8 +66,6 @@ repository and overlay, so treat this as the software surface the setup expects.
 
 ## UI And Themes
 
-- [`DejaVu Sans`](https://dejavu-fonts.github.io/)
-- [`DejaVu Sans Mono`](https://dejavu-fonts.github.io/)
 - [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`JetBrainsMono Nerd Font`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`Graphite-Dark`](https://github.com/vinceliuice/Graphite-gtk-theme)
