@@ -235,6 +235,47 @@ install_icon_theme() {
     printf 'install %s\n' "$icon_dst"
 }
 
+install_fonts() {
+    font_dst=$target_home/.local/share/fonts
+    mkdir -p -- "$font_dst"
+
+    if [ -d "$repo_dir/fonts" ]; then
+        printf 'install MxPlus IBM VGA font\n'
+        cp -R -- "$repo_dir/fonts/." "$font_dst/"
+    fi
+
+    if [ "$dry_run" -eq 1 ]; then
+        printf 'would ask to install Symbols Nerd Font Mono and JetBrainsMono Nerd Font\n'
+        return
+    fi
+
+    if ! ask_yes_no "Install Symbols Nerd Font Mono and JetBrainsMono Nerd Font?"; then
+        printf 'skip Nerd Fonts\n'
+        return
+    fi
+
+    nerd_font_dir=$(mktemp -d)
+    printf 'download Symbols Nerd Font Mono\n'
+    curl -fsSL "https://github.com/nerd-fonts/releases/latest/download/SymbolsNerdFontMono.ttf" \
+        -o "$nerd_font_dir/SymbolsNerdFontMono-Regular.ttf"
+
+    printf 'download Symbols Nerd Font\n'
+    curl -fsSL "https://github.com/nerd-fonts/releases/latest/download/SymbolsNerdFont.ttf" \
+        -o "$nerd_font_dir/SymbolsNerdFont-Regular.ttf"
+
+    printf 'download JetBrainsMono Nerd Font\n'
+    curl -fsSL "https://github.com/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz" \
+        -o "$nerd_font_dir/JetBrainsMono.tar.xz"
+    tar -xf "$nerd_font_dir/JetBrainsMono.tar.xz" -C "$nerd_font_dir"
+
+    mkdir -p -- "$font_dst/JetBrainsMonoNerd"
+    cp -R -- "$nerd_font_dir"/*.ttf "$font_dst/" 2>/dev/null || true
+    cp -R -- "$nerd_font_dir"/ttf/*.ttf "$font_dst/JetBrainsMonoNerd/" 2>/dev/null || true
+
+    rm -rf -- "$nerd_font_dir"
+    printf 'install Nerd Fonts to %s\n' "$font_dst"
+}
+
 for root in "$repo_dir"/.[!.]* "$repo_dir"/..?* "$repo_dir"/Wallpaper; do
     [ -e "$root" ] || continue
 
@@ -252,6 +293,7 @@ done
 
 install_gtk_theme
 install_icon_theme
+install_fonts
 
 if [ "$dry_run" -eq 0 ] && [ "$skip_backup" -eq 0 ]; then
     printf 'backup directory: %s\n' "$backup_root"
