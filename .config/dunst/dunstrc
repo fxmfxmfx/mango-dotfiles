@@ -21,7 +21,7 @@
     format = "<span foreground='#e6da94'>%s</span>\n%b"
     alignment = left
     vertical_alignment = center
-    rord_wrap = true
+    word_wrap = true
     ellipsize = middle
     markup = full
 

@@ -12,6 +12,7 @@ pipewire-pulse
 wireplumber
 foot
 footclient
+rofi
 awww
 awww-daemon
 rs-yambar
@@ -42,7 +43,6 @@ pgrep
 killall
 mktemp
 xdg-open
-python
 "
 
 optional_commands="
@@ -56,6 +56,13 @@ tty-clock
 neo
 make
 gcc
+magick
+ffmpeg
+mpvpaper
+yt-dlp
+xsettingsd
+unzip
+fc-cache
 "
 
 missing=0
@@ -116,6 +123,15 @@ done
 for command_name in $optional_commands; do
     check_command "$command_name" "optional" 0
 done
+
+if command -v python3 >/dev/null 2>&1; then
+    printf 'ok      required python3\n'
+elif command -v python >/dev/null 2>&1; then
+    printf 'ok      required python (python3 not found, python is fine)\n'
+else
+    printf 'missing required python3\n'
+    missing=1
+fi
 
 check_command curl "optional" 0
 
