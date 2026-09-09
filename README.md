@@ -17,10 +17,10 @@ cd mango-dotfiles
 ```
 
 This repo mirrors `$HOME` for dot directories such as `.config` and `.local`.
-The installer backs up overwritten files by default and asks whether to install
-the Graphite GTK theme and Goldy icon theme. The dry run shows what would be
-copied and whether optional theme/icon installs would use local sources or clone
-their upstream repositories.
+The installer backs up overwritten files by default. It installs the bundled
+fonts (MxPlus IBM VGA and Nerd Fonts) and copies the theme configuration
+(Gruvbox GTK theme, Kvantum/Qt6ct for Qt apps, and the default Adwaita icon
+scheme) as regular dotfiles. The dry run shows what would be copied.
 
 Run Mango from a TTY with:
 
@@ -154,8 +154,9 @@ These are mostly command-line tools used by helper scripts. Prefer
 
 - [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`JetBrainsMono Nerd Font`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
-- [`Graphite-Dark`](https://github.com/vinceliuice/Graphite-gtk-theme)
-- [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
+- [`Gruvbox-Dark-Soft`](https://github.com/morhetz/gruvbox) - GTK theme (installed under `~/.themes`)
+- `gruvbox-kvantum` - Kvantum style for Qt apps (bundled in `.config/Kvantum`)
+- `Adwaita` - default icon theme (GTK3/Qt default), plus `Bibata-Modern-Ice` cursor
 
 MxPlus IBM VGA 8x16 MidTilde font is included in `fonts/` directory.
 

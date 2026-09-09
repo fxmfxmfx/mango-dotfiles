@@ -83,8 +83,12 @@ backend and uses the wlr backend for screenshot and screencast portals.
 GTK, foot, rs-yambar, dunst, and fastfetch expect the fonts and themes listed in
 `docs/packages.md`.
 
-`scripts/install.sh` asks whether to install the Graphite GTK theme and Goldy
-icon theme. Use `--no-theme` or `--no-icons` to skip those prompts.
+The repo bundles the Gruvbox GTK theme config (`.config/gtk-3.0`, `gtk-4.0`),
+the `gruvbox-kvantum` Kvantum style (`.config/Kvantum`) and the Qt6ct setup
+(`.config/qt6ct`, plus `QT_QPA_PLATFORMTHEME`/`QT_STYLE_OVERRIDE` in
+`.config/environment.d`). Icons use the default `Adwaita` scheme. The installer
+only copies these files; it no longer prompts to install third-party GTK themes
+or icon themes.
 
 Check:
 

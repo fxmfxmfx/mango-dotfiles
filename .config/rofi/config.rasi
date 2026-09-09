@@ -1,7 +1,7 @@
 configuration {
     modi: "drun,run,window";
     show-icons: true;
-    icon-theme: "Papirus-Dark";
+    icon-theme: "Adwaita";
     terminal: "footclient";
 
     drun-display-format: "{icon} {name}";

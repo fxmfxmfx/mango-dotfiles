@@ -7,14 +7,6 @@ target_home=${HOME:?HOME is not set}
 backup_root=
 dry_run=0
 skip_backup=0
-install_theme=1
-install_icons=1
-assume_yes=0
-theme_source=${GTK_THEME_DIR:-"$HOME/Graphite-gtk-theme"}
-theme_installer=${GTK_THEME_INSTALLER:-}
-theme_repo=https://github.com/vinceliuice/Graphite-gtk-theme.git
-icons_source=${GOLDY_ICONS_DIR:-"$HOME/Goldy-Plasma-Themes"}
-icons_repo=https://github.com/L4ki/Goldy-Plasma-Themes.git
 
 usage() {
     cat <<'EOF'
@@ -23,17 +15,11 @@ Usage: ./scripts/install.sh [options]
 Options:
   --dry-run       Show what would be installed without changing files.
   --no-backup     Overwrite existing files without moving them to a backup.
-  --no-theme      Skip Graphite GTK theme prompt.
-  --no-icons      Skip Goldy icon theme prompt.
-  -y, --yes       Install optional theme and icons without prompting.
   --home PATH     Install into PATH instead of $HOME.
   -h, --help      Show this help.
 
 Environment:
   DOTFILES_BACKUP_DIR  Backup directory for overwritten files.
-  GTK_THEME_DIR         Path to a local Graphite-gtk-theme checkout.
-  GTK_THEME_INSTALLER   Path to a local Graphite install.sh.
-  GOLDY_ICONS_DIR       Path to a local Goldy-Plasma-Themes checkout.
 EOF
 }
 
@@ -44,15 +30,6 @@ while [ "$#" -gt 0 ]; do
             ;;
         --no-backup)
             skip_backup=1
-            ;;
-        --no-theme)
-            install_theme=0
-            ;;
-        --no-icons)
-            install_icons=0
-            ;;
-        -y|--yes)
-            assume_yes=1
             ;;
         --home)
             shift
@@ -118,127 +95,6 @@ copy_file() {
     printf 'install %s\n' "$dst"
 }
 
-ask_yes_no() {
-    prompt=$1
-
-    if [ "$assume_yes" -eq 1 ]; then
-        return 0
-    fi
-
-    if [ ! -t 0 ]; then
-        return 1
-    fi
-
-    printf '%s [y/N] ' "$prompt"
-    read -r answer
-
-    case "$answer" in
-        y|Y|yes|YES)
-            return 0
-            ;;
-        *)
-            return 1
-            ;;
-    esac
-}
-
-backup_path_if_needed() {
-    dst=$1
-    rel_path=${dst#"$target_home"/}
-
-    if [ -e "$dst" ] || [ -L "$dst" ]; then
-        if [ "$skip_backup" -eq 0 ]; then
-            backup_path=$backup_root/$rel_path
-            mkdir -p -- "$(dirname -- "$backup_path")"
-            mv -- "$dst" "$backup_path"
-            printf 'backup  %s -> %s\n' "$dst" "$backup_path"
-        fi
-    fi
-}
-
-install_gtk_theme() {
-    if [ "$install_theme" -ne 1 ]; then
-        return 0
-    fi
-
-    if [ "$dry_run" -eq 1 ]; then
-        printf 'would ask to install Graphite GTK theme with --tweaks black rimless --libadwaita\n'
-        if [ -n "$theme_installer" ]; then
-            printf 'would use Graphite installer %s\n' "$theme_installer"
-        elif [ -x "$theme_source/install.sh" ]; then
-            printf 'would use local Graphite checkout %s\n' "$theme_source"
-        else
-            printf 'would clone %s\n' "$theme_repo"
-        fi
-        return
-    fi
-
-    if ! ask_yes_no "Install Graphite GTK theme?"; then
-        printf 'skip Graphite GTK theme\n'
-        return
-    fi
-
-    if [ -n "$theme_installer" ]; then
-        if [ ! -x "$theme_installer" ]; then
-            printf 'missing Graphite installer: %s\n' "$theme_installer" >&2
-            return 1
-        fi
-        printf 'install Graphite GTK theme from %s\n' "$theme_installer"
-        HOME=$target_home "$theme_installer" --tweaks black rimless --libadwaita
-        return
-    fi
-
-    if [ -x "$theme_source/install.sh" ]; then
-        printf 'install Graphite GTK theme from %s\n' "$theme_source"
-        HOME=$target_home "$theme_source/install.sh" --tweaks black rimless --libadwaita
-        return
-    fi
-
-    temp_dir=$(mktemp -d)
-    printf 'clone %s\n' "$theme_repo"
-    git clone --depth 1 "$theme_repo" "$temp_dir/Graphite-gtk-theme"
-    printf 'install Graphite GTK theme with --tweaks black rimless --libadwaita\n'
-    HOME=$target_home "$temp_dir/Graphite-gtk-theme/install.sh" --tweaks black rimless --libadwaita
-}
-
-install_icon_theme() {
-    if [ "$install_icons" -ne 1 ]; then
-        return 0
-    fi
-
-    if [ "$dry_run" -eq 1 ]; then
-        printf 'would ask to install Goldy-Dark-Icons\n'
-        if [ -d "$icons_source/Goldy Icons Themes/Goldy-Dark-Icons" ]; then
-            printf 'would use local Goldy checkout %s\n' "$icons_source"
-        else
-            printf 'would clone %s\n' "$icons_repo"
-        fi
-        return
-    fi
-
-    if ! ask_yes_no "Install Goldy-Dark-Icons?"; then
-        printf 'skip Goldy-Dark-Icons\n'
-        return
-    fi
-
-    icon_rel='Goldy Icons Themes/Goldy-Dark-Icons'
-    icon_src=$icons_source/$icon_rel
-
-    if [ ! -d "$icon_src" ]; then
-        temp_dir=$(mktemp -d)
-        printf 'clone %s\n' "$icons_repo"
-        git clone --depth 1 "$icons_repo" "$temp_dir/Goldy-Plasma-Themes"
-        icon_src=$temp_dir/Goldy-Plasma-Themes/$icon_rel
-    fi
-
-    icon_dst=$target_home/.local/share/icons/Goldy-Dark-Icons
-    mkdir -p -- "$(dirname -- "$icon_dst")"
-    backup_path_if_needed "$icon_dst"
-    mkdir -p -- "$icon_dst"
-    cp -R -- "$icon_src"/. "$icon_dst"/
-    printf 'install %s\n' "$icon_dst"
-}
-
 install_fonts() {
     font_dst=$target_home/.local/share/fonts
 
@@ -256,12 +112,7 @@ install_fonts() {
     fi
 
     if [ "$dry_run" -eq 1 ]; then
-        printf 'would ask to install Symbols Nerd Font Mono and JetBrainsMono Nerd Font\n'
-        return
-    fi
-
-    if ! ask_yes_no "Install Symbols Nerd Font Mono and JetBrainsMono Nerd Font?"; then
-        printf 'skip Nerd Fonts\n'
+        printf 'would install Symbols Nerd Font Mono and JetBrainsMono Nerd Font\n'
         return
     fi
 
@@ -317,8 +168,6 @@ for root in "$repo_dir"/.[!.]* "$repo_dir"/..?* "$repo_dir"/Wallpaper; do
     done
 done
 
-install_gtk_theme
-install_icon_theme
 install_fonts
 
 if [ "$dry_run" -eq 0 ] && [ "$skip_backup" -eq 0 ]; then

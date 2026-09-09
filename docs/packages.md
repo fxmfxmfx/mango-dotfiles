@@ -68,8 +68,9 @@ repository and overlay, so treat this as the software surface the setup expects.
 
 - [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`JetBrainsMono Nerd Font`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
-- [`Graphite-Dark`](https://github.com/vinceliuice/Graphite-gtk-theme)
-- [`Goldy-Dark-Icons`](https://github.com/L4ki/Goldy-Plasma-Themes/tree/main/Goldy%20Icons%20Themes/Goldy-Dark-Icons)
+- [`Gruvbox-Dark-Soft`](https://github.com/morhetz/gruvbox) - GTK theme (installed under `~/.themes`)
+- `gruvbox-kvantum` - Kvantum style for Qt apps (bundled in `.config/Kvantum`)
+- `Adwaita` - default icon theme (GTK3/Qt default), plus `Bibata-Modern-Ice` cursor
 
 MxPlus IBM VGA 8x16 MidTilde font is included in `fonts/` directory.
 
