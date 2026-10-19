@@ -23,6 +23,10 @@ Personal [MangoWM](https://github.com/mangowm/mango) dotfiles for Gentoo GNU/Lin
 
 ![rs-wwidget clock and system information](screenshots/desktop-widgets.png)
 
+### Gruvbox with a different wallpaper
+
+![Gruvbox desktop with a different wallpaper](screenshots/gruvbox-other-wallpaper.png)
+
 </details>
 
 ## Quick Install
