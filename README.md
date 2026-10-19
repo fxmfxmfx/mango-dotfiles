@@ -113,13 +113,17 @@ See [docs/themes.md](docs/themes.md) for installation, the complete palette
 format, custom themes, wallpaper paths, component overrides and troubleshooting.
 The previous URL/video wallpaper and wallpaper-derived color helpers are retired.
 
-## Browser and app themes
+## Optional LibreWolf and Vesktop themes
 
-The bundle includes three signed browser XPIs (two themes and the switcher),
-its local handler, and three Vesktop CSS files (two presets and Desktop Theme).
-After installing the dotfiles, run `desktop-theme-browser-setup` and install the
-three printed XPI files once through `about:addons`. In Vesktop, enable only
-Desktop Theme once. These setup steps persist across restarts.
+LibreWolf and Vesktop are optional: neither application nor its theme setup is
+needed for the desktop theme switcher. The dotfiles bundle includes three
+signed browser XPIs (two themes and the switcher), its local handler, and three
+Vesktop CSS files (two presets and Desktop Theme), but does not install either
+application or activate its integration. To enable LibreWolf synchronization,
+run `desktop-theme-browser-setup` and install the three printed XPI files once
+through `about:addons`. To enable Vesktop synchronization, enable only Desktop
+Theme once in Vesktop. These app-specific steps are optional and persist across
+restarts.
 
 The optional `./scripts/install-app-themes.sh` downloads the ready-made
 Catppuccin GTK/Qt presets; the normal installer does not run it. See
@@ -226,6 +230,7 @@ Optional apps:
 - `imv`
 - `thunar`
 - `librewolf`
+- `vesktop` (for optional Vesktop theme synchronization)
 - `pavucontrol`
 
 Other commands reported as optional by `check-deps.sh`:

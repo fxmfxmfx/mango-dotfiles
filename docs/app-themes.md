@@ -1,10 +1,13 @@
 # Browser, Vesktop and optional GTK/Qt themes
 
-The normal dotfile installer copies the browser packages, native handler,
-Vesktop styles and application adapter. Browser installation and the Vesktop
-selection are one-time manual steps. GTK/Qt theme downloads are a separate,
-optional command. Profiles, cookies, account settings and session data are not
-part of this bundle.
+LibreWolf and Vesktop integration is optional; neither application is required
+for desktop theme switching. The normal dotfile installer copies the signed
+browser add-ons, native-messaging handler, Vesktop styles and application
+adapter, but does not install either application, add browser extensions to a
+profile or enable the Vesktop stylesheet. Those app-specific setup steps are
+manual and optional.
+GTK/Qt theme downloads are a separate optional command. Profiles, cookies,
+account settings and session data are not part of this bundle.
 
 ## Layout
 
@@ -30,7 +33,7 @@ part of this bundle.
 scripts/install-app-themes.sh          # optional GTK/Qt preset download
 ```
 
-## Browser: install once
+## LibreWolf: optional setup
 
 After `./scripts/install.sh`:
 
@@ -92,7 +95,7 @@ Third-party browser-theme authors, sources and licenses are recorded in the
 bundle's README. The bridge's source ID must continue matching the native-host
 allowed-extension ID.
 
-## Vesktop: three CSS files, one enabled
+## Vesktop: optional CSS setup
 
 In Vesktop's **Settings > Vencord > Themes**, enable **Desktop Theme** once.
 Disable the other local theme selections and any remote theme links that would
