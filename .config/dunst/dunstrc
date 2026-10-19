@@ -16,9 +16,9 @@
     frame_width = 1
     corner_radius = 0
 
-    font = JetBrainsMono Nerd Font 12, Symbols Nerd Font Mono 12
+    font = MxPlus IBM VGA 8x16 MidTilde 12
     line_height = 1
-    format = "<span foreground='#e6da94'>%s</span>\n%b"
+    format="<span foreground='#fabd2f'>%s</span>\n%b"
     alignment = left
     vertical_alignment = center
     word_wrap = true
@@ -31,11 +31,11 @@
     hide_duplicate_count = false
     sort = update
 
-    background = "#141310ff"
-    foreground = "#e5e4dcff"
-    frame_color = "#e6da94ff"
-    separator_color = "#e6da94ff"
-    highlight = "#e6da94ff"
+    background="#282828ff"
+    foreground="#ebdbb2ff"
+    frame_color="#fabd2fff"
+    separator_color="#fabd2fff"
+    highlight="#fabd2fff"
 
     progress_bar = true
     progress_bar_height = 8
@@ -47,22 +47,22 @@
     timeout = 3
 
 [urgency_low]
-    background = "#1b1b18ff"
-    foreground = "#a39d7bff"
-    frame_color = "#a39d7bff"
-    highlight = "#a39d7bff"
+    background="#3c3836ff"
+    foreground="#a89984ff"
+    frame_color="#a89984ff"
+    highlight="#a89984ff"
     timeout = 2
 
 [urgency_normal]
-    background = "#141310ff"
-    foreground = "#e5e4dcff"
-    frame_color = "#e6da94ff"
-    highlight = "#e6da94ff"
+    background="#282828ff"
+    foreground="#ebdbb2ff"
+    frame_color="#fabd2fff"
+    highlight="#fabd2fff"
     timeout = 3
 
 [urgency_critical]
-    background = "#141310ff"
-    foreground = "#e5e4dcff"
-    frame_color = "#d8a864ff"
-    highlight = "#d8a864ff"
+    background="#282828ff"
+    foreground="#ebdbb2ff"
+    frame_color="#fb4934ff"
+    highlight="#fb4934ff"
     timeout = 0

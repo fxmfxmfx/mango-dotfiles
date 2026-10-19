@@ -63,7 +63,10 @@ copy_file() {
         .cache/*|.local/share/*|.local/state/*)
             return
             ;;
-        *.log|*.bak|*.swp|*.swo)
+        *.log|*.bak|*.swp|*.swo|*.pyc|*.pyo|*/__pycache__/*)
+            return
+            ;;
+        .config/desktop-themes/active.json|.config/desktop-themes/current|.config/desktop-themes/.lock|.config/desktop-themes/backup*/*)
             return
             ;;
     esac
@@ -93,6 +96,21 @@ copy_file() {
 
     cp -Pp -- "$src" "$dst"
     printf 'install %s\n' "$dst"
+}
+
+retire_file() {
+    rel_path=$1
+    dst=$target_home/$rel_path
+    [ -e "$dst" ] || [ -L "$dst" ] || return 0
+    if [ "$dry_run" -eq 1 ]; then
+        printf 'would retire  %s\n' "$dst"
+        return
+    fi
+    # Keep retired helpers recoverable, including with --no-backup.
+    backup_path=$backup_root/retired/$rel_path
+    mkdir -p -- "$(dirname -- "$backup_path")"
+    mv -- "$dst" "$backup_path"
+    printf 'retire  %s -> %s\n' "$dst" "$backup_path"
 }
 
 install_fonts() {
@@ -166,6 +184,20 @@ for root in "$repo_dir"/.[!.]* "$repo_dir"/..?* "$repo_dir"/Wallpaper; do
         rel_path=${path#"$repo_dir"/}
         copy_file "$rel_path"
     done
+done
+
+for retired in \
+    .config/rs-yambar/scripts/reminder-poller.sh \
+    .config/rs-yambar/scripts/reminder.py \
+    .config/rs-yambar/reminders.txt \
+    .config/rs-yambar/reminders.txt.lock \
+    .local/bin/live-wallpaper \
+    .local/bin/mpvpaper-stop \
+    .local/bin/wallpaper-url-add \
+    .config/dunst/scripts/walltheme.sh \
+    .config/rofi/scripts/walltheme.sh \
+    .config/rs-yambar/scripts/walltheme.sh; do
+    retire_file "$retired"
 done
 
 install_fonts

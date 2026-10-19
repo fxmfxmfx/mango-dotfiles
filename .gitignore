@@ -11,3 +11,14 @@
 *.bak
 *.swp
 *.swo
+
+# Theme output, local selection and backups
+.config/desktop-themes/active.json
+.config/desktop-themes/current
+.config/desktop-themes/.lock
+.config/desktop-themes/backup*/
+.config/desktop-themes/.active.json*
+.config/rs-yambar/reminders.txt.lock
+
+__pycache__/
+*.py[cod]

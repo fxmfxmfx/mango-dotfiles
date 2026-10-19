@@ -1,8 +1,8 @@
 configuration {
     modi: "drun,run,window";
     show-icons: true;
-    icon-theme: "Adwaita";
-    terminal: "footclient";
+    icon-theme: "Papirus-Dark";
+    terminal: "themed-footclient";
 
     drun-display-format: "{icon} {name}";
     display-drun: "apps";
@@ -14,18 +14,18 @@ configuration {
     sorting-method: "fzf";
     matching: "fuzzy";
 
-    font: "JetBrainsMono Nerd Font 11";
+    font: "MxPlus IBM VGA 8x16 MidTilde 12";
 }
 
 * {
-    bg:          #141310ff;
-    bg-alt:      #1c1b17ff;
-    bg-soft:     #262521ff;
-    fg:          #e5e4dcff;
-    fg-dim:      #a39d7bff;
-    accent:      #e6da94ff;
-    urgent:      #d8a864ff;
-    border:      #33332dff;
+    bg:          #282828ff;
+    bg-alt:      #3c3836ff;
+    bg-soft:     #504945ff;
+    fg:          #ebdbb2ff;
+    fg-dim:      #a89984ff;
+    accent:      #fabd2fff;
+    urgent:      #fb4934ff;
+    border:      #665c54ff;
     transparent: #00000000;
 
     margin: 0;
@@ -34,7 +34,7 @@ configuration {
 }
 
 window {
-    width: 420px;
+    width: 360px;
     location: center;
     anchor: center;
 
@@ -48,7 +48,7 @@ window {
 
 mainbox {
     background-color: @bg;
-    spacing: 5px;
+    spacing: 4px;
 }
 
 inputbar {
@@ -82,7 +82,7 @@ entry {
 listview {
     background-color: @bg;
     columns: 1;
-    lines: 12;
+    lines: 10;
     fixed-height: true;
 
     spacing: 1px;
@@ -99,7 +99,7 @@ element {
     text-color: @fg-dim;
 
     padding: 3px 6px;
-    spacing: 7px;
+    spacing: 6px;
 
     border: 0px 0px 0px 2px;
     border-color: @transparent;
@@ -138,7 +138,7 @@ element-icon {
     background-color: @transparent;
     text-color: inherit;
 
-    size: 15px;
+    size: 14px;
     padding: 0px;
 }
 

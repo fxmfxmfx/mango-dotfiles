@@ -18,11 +18,13 @@ repository and overlay, so treat this as the software surface the setup expects.
 - [`rofi`](https://github.com/DaveDavenport/rofi)
 - [`awww`](https://github.com/NotAShelf/awww)
 - [`rs-yambar`](https://github.com/fxmfxmfx/rs-yambar)
+- [`rs-wwidget`](https://github.com/fxmfxmfx/rs-wwidget)
 - [`dunst`](https://github.com/dunst-project/dunst)
 
 ## Script Dependencies
 
 - `bash`
+- `notify-send` (libnotify), `dunstctl`, `pgrep`, `pkill`
 - GNU `coreutils`
 - `findutils`
 - `gawk` or compatible `awk`
@@ -52,7 +54,7 @@ repository and overlay, so treat this as the software surface the setup expects.
 - `git`
 - `make`
 - `gcc` or another C compiler for Treesitter parsers
-- `python`
+- `python3` and its `msgpack` module (existing Neovim theme updates)
 - `btop`
 - `fastfetch`
 - [`ripgrep`](https://github.com/BurntSushi/ripgrep)
@@ -70,7 +72,7 @@ repository and overlay, so treat this as the software surface the setup expects.
 - [`JetBrainsMono Nerd Font`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`Gruvbox-Dark-Soft`](https://github.com/morhetz/gruvbox) - GTK theme (installed under `~/.themes`)
 - `gruvbox-kvantum` - Kvantum style for Qt apps (bundled in `.config/Kvantum`)
-- `Adwaita` - default icon theme (GTK3/Qt default), plus `Bibata-Modern-Ice` cursor
+- `Adwaita` - GTK/Qt icons; `Papirus-Dark` - rofi icons; `Bibata-Modern-Ice` - cursor
 
 MxPlus IBM VGA 8x16 MidTilde font is included in `fonts/` directory.
 
@@ -86,3 +88,8 @@ The checker is the source of truth for required commands. It also checks Gentoo'
 `/usr/libexec` portal paths separately from common `/usr/lib` locations and
 regular `$PATH` command lookup. Optional commands are reported for convenience,
 but missing optional commands do not make the check fail.
+
+## Global themes
+
+See [themes.md](themes.md) for the theme helper requirements and configuration.
+Video wallpaper packages are no longer used by this setup.

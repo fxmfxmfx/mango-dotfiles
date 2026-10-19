@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+export PATH="~/.cargo/bin:~/.local/bin:$PATH"
 
 case "$1" in
     full)

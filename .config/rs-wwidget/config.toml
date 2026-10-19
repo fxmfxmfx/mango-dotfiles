@@ -1,0 +1,22 @@
+# Widget labels: "en" or "ru". CLI output and logs are always English.
+language = "en"
+# Copy to ~/.config/rs-wwidget/config.toml (or $XDG_CONFIG_HOME/rs-wwidget/).
+# Run rs-wwidget --list-monitors to see connector names. Restart after editing.
+monitor = "DP-1"
+
+# Panel background: 0.0 transparent, 1.0 opaque.
+background_opacity = 1.0
+font_family = "MxPlus IBM VGA 8x16 MidTilde"
+
+# Full: "clock", "calendar", "system"
+widgets = ["clock", "system"]
+
+[colors]
+background="#282828"
+foreground="#ebdbb2"
+muted="#a89984"
+accent="#fabd2f"
+green="#b8bb26"
+border="#665c54"
+bar_background="#504945"
+grid_background="#282828"

@@ -2,8 +2,8 @@
 height = 28
 position = "top"
 layer = "top"
-background = "#141310ff"
-foreground = "#e5e4dcff"
+background = "#282828ff"
+foreground = "#ebdbb2ff"
 font = "MxPlus IBM VGA 8x16 MidTilde:pixelsize=16, Symbols Nerd Font:pixelsize=13"
 spacing = 0
 left_spacing = 0
@@ -21,11 +21,12 @@ item_spacing = 0
 item_width = 21
 underline_size = 3
 underline_inset = 2
-active_foreground = "#141310ff"
-active_background = "#e6da94ff"
-occupied_foreground = "#e5e4dcff"
-occupied_underline = "#e6da94ff"
-empty_foreground = "#a39d7bff"
+active_foreground = "#282828ff"
+active_background = "#fabd2fff"
+occupied_foreground = "#ebdbb2ff"
+occupied_underline = "#fabd2fff"
+empty_foreground = "#a89984ff"
+on_click = "~/.config/yambar/scripts/view-tag.sh {index} {output}"
 
 [[center]]
 type = "foreign-toplevel"
@@ -36,7 +37,7 @@ fade_ms = 600
 
 [[center.segments]]
 format = "{icon}"
-foreground = "#e6da94ff"
+foreground = "#fabd2fff"
 
 [[center.segments]]
 format = "{text}"
@@ -44,21 +45,19 @@ max-chars = 80
 
 [[right]]
 type = "script"
-name = "reminders"
-command = ["~/.config/rs-yambar/scripts/reminder-poller.sh"]
+name = "kblayout"
+command = ["sh", "-c", "\"$HOME/.config/yambar/scripts/kblayout.sh\""]
 mode = "poll"
 protocol = "yambar"
-interval_ms = 2000
-format = " {count}"
-style = { foreground = "#8f8f8fff", on_hover = "~/.config/rs-yambar/scripts/reminder.py" }
+interval_ms = 1000
+format = "{layout} "
 
 [[right.segments]]
-format = ""
-foreground = "#e6da94ff"
+format = " "
+foreground = "#fabd2fff"
 
 [[right.segments]]
-format = "{count} "
-foreground = "#e6da94ff"
+format = "{layout} "
 
 [[right]]
 type = "memory"
@@ -67,7 +66,7 @@ format = "{used:mb}M "
 
 [[right.segments]]
 format = " "
-foreground = "#e6da94ff"
+foreground = "#fabd2fff"
 
 [[right.segments]]
 format = "{used:mb}M "
@@ -80,7 +79,7 @@ muted_text = "muted"
 
 [[right.segments]]
 format = "{icon}"
-foreground = "#e6da94ff"
+foreground = "#fabd2fff"
 
 [[right.segments]]
 format = "{text}"
@@ -93,12 +92,12 @@ date_format = "%d.%m"
 
 [[right.segments]]
 format = " "
-foreground = "#e6da94ff"
+foreground = "#fabd2fff"
 
 [[right.segments]]
 format = "{date} "
-foreground = "#a39d7bff"
+foreground = "#a89984ff"
 
 [[right.segments]]
 format = "{time}"
-foreground = "#e6da94ff"
+foreground = "#fabd2fff"

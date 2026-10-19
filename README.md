@@ -34,19 +34,36 @@ Wayland tooling and a POSIX-compatible shell.
 ## Contents
 
 - `.config/mango` - MangoWM session, monitor rules, key binds and autostart
+- `.config/desktop-themes` - shared JSON palettes; see [the theme guide](docs/themes.md)
+- `.config/rs-wwidget` - desktop widgets
 - `.config/rs-yambar` - top bar with Mango workspace and keyboard-layout scripts
 - `.config/foot`, `.config/rofi`, `.config/dunst` - terminal, launcher and notifications
 - `.config/nvim` - Neovim config using lazy.nvim (minimal on purpose)
-- `scripts` - helper scripts for screenshots, clipboard, layout, portals,
-  wallpaper, emoji picker and more
+- `.local/bin` - theme, terminal, screenshot, clipboard, layout, portal and wallpaper helpers
+- `scripts` - installer and dependency checker
 - `Wallpaper` - wallpapers used by the wallpaper picker
 - `docs` - package list and customization notes for forks
 
+## Global Themes
+
+One JSON file controls MangoWM, rofi, foot, Neovim, dunst, rs-yambar and
+rs-wwidget. Each theme can assign a default image wallpaper. Open terminals
+and editors update without restarting. GTK/Qt keep their own theme.
+
+```sh
+desktop-theme --check gruvbox
+desktop-theme gruvbox
+```
+
+See [docs/themes.md](docs/themes.md) for installation, the complete palette
+format, custom themes, wallpaper paths, component overrides and troubleshooting.
+The previous URL/video wallpaper and wallpaper-derived color helpers are retired.
+
 ## Compatibility Notes
 
-- The `rs-yambar` binary in `.local/bin/` was compiled on a specific system and may
+- The `rs-yambar` and `rs-wwidget` binaries in `.local/bin/` were compiled on a specific system and may
   not run on yours due to glibc version differences. If it fails, rebuild from
-  source: https://github.com/fxmfxmfx/rs-yambar
+  source: https://github.com/fxmfxmfx/rs-yambar and https://github.com/fxmfxmfx/rs-wwidget
 - Monitor config is machine-specific: `DP-1` at `1920x1080@170` and `HDMI-A-1`
   at `1920x1080@60`. Edit `.config/mango/conf.d/00-monitors.conf` before using
   this on another machine. See Mango's monitor docs:
@@ -101,6 +118,7 @@ Gentoo.
 - [`rofi`](https://github.com/DaveDavenport/rofi)
 - [`awww`](https://github.com/NotAShelf/awww)
 - [`rs-yambar`](https://github.com/fxmfxmfx/rs-yambar)
+- [`rs-wwidget`](https://github.com/fxmfxmfx/rs-wwidget)
 - [`dunst`](https://github.com/dunst-project/dunst)
 
 ### Script Dependencies
@@ -138,7 +156,7 @@ These are mostly command-line tools used by helper scripts. Prefer
 - `git`
 - `make`
 - `gcc` or another C compiler for Treesitter parsers
-- `python`
+- `python3` and its `msgpack` module
 - `btop`
 - `fastfetch`
 - [`ripgrep`](https://github.com/BurntSushi/ripgrep)
@@ -156,7 +174,7 @@ These are mostly command-line tools used by helper scripts. Prefer
 - [`JetBrainsMono Nerd Font`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`Gruvbox-Dark-Soft`](https://github.com/morhetz/gruvbox) - GTK theme (installed under `~/.themes`)
 - `gruvbox-kvantum` - Kvantum style for Qt apps (bundled in `.config/Kvantum`)
-- `Adwaita` - default icon theme (GTK3/Qt default), plus `Bibata-Modern-Ice` cursor
+- `Adwaita` - GTK/Qt icons; `Papirus-Dark` - rofi icons; `Bibata-Modern-Ice` - cursor
 
 MxPlus IBM VGA 8x16 MidTilde font is included in `fonts/` directory.
 
@@ -167,9 +185,9 @@ For a more readable package list, see `docs/packages.md`.
 - `Super+Return` - terminal
 - `Super+Esc` - launcher
 - `Super+W` - browser
-- `Super+E` - file manager
 - `Super+V` - clipboard history
-- `Super+X` - wallpaper picker
+- **Super + grave (backtick)** - theme menu (`cflowers`, `gruvbox` and custom JSON themes)
+- `Super+X` - local image wallpaper picker; colors stay unchanged
 - `Super+/` - emoji picker
 - `Print` - monitor screenshot to clipboard
 - `Ctrl+Print` - full screenshot to clipboard

@@ -22,13 +22,9 @@ Use `.config/mango/conf.d/00-monitors.conf` as a starting point.
 
 Edit `.config/rs-yambar/config.toml`.
 
-The bar and workspace click actions are pinned to `DP-1`. Replace that output in:
-
-- `bar.monitor`
-- every `mmsg -o DP-1 ...` click action
-
-The workspace script reads `YAMBAR_MANGO_OUTPUT`, but the rs-yambar config still
-needs the output name written in the click actions.
+The workspace module uses `output = "DP-1"`; its click helper receives the
+same output. The desktop widget separately uses `monitor = "DP-1"` in
+`.config/rs-wwidget/config.toml`. Update both for your display layout.
 
 To replace the primary output name before installing, use:
 
@@ -38,6 +34,7 @@ new=eDP-1
 sed -i "s/$old/$new/g" \
   .config/mango/conf.d/00-monitors.conf \
   .config/rs-yambar/config.toml \
+  .config/rs-wwidget/config.toml \
   .local/bin/layout.sh
 ```
 
@@ -48,7 +45,7 @@ Application key binds live in `.config/mango/conf.d/30-binds-apps.conf`.
 Common personal choices to replace:
 
 - browser: `librewolf`
-- terminal: `footclient`
+- terminal: `themed-footclient` (for current palette overrides)
 - file manager: `thunar`
 - volume UI: `pavucontrol`
 
@@ -97,3 +94,14 @@ Check:
 - `.config/foot/foot.ini`
 - `.config/rs-yambar/config.toml`
 - `.config/dunst/dunstrc`
+
+## Global theme palettes
+
+Use Super + grave or `desktop-theme NAME`. Put custom JSON files in
+`~/.config/desktop-themes/themes/`; assign images with each theme's `wallpaper`
+field. Super + X picks a temporary image without changing colors.
+
+See [themes.md](themes.md) for the full schema, component overrides, Neovim
+integration, terminal launch helper, generated state and troubleshooting.
+The script writes color fields in the app configurations listed above; make
+persistent color edits in the JSON palette rather than generated color fields.

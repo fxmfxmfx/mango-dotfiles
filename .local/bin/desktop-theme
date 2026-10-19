@@ -1,0 +1,352 @@
+#!/usr/bin/env python3
+"""One JSON theme for the desktop, Neovim and local image wallpaper."""
+import argparse
+import configparser
+import fcntl
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import socket
+import subprocess
+import sys
+import tempfile
+
+CONFIG = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
+ROOT = CONFIG / 'desktop-themes'
+
+
+def run(args, **kwargs):
+    kwargs.setdefault('timeout', 15)
+    return subprocess.run(args, text=True, **kwargs)
+
+
+def palette(name):
+    if not re.fullmatch(r'[A-Za-z0-9_-]+', name):
+        raise ValueError('Invalid theme name')
+    p = json.loads((ROOT / 'themes' / f'{name}.json').read_text())
+    for key in ('bg', 'bg_alt', 'bg_soft', 'fg', 'muted', 'accent', 'urgent', 'border', 'green'):
+        if key not in p:
+            raise ValueError(f'Missing color: {key}')
+    for key, value in p.items():
+        if key == 'wallpaper':
+            wallpaper_path(value)  # Validate before writing any configuration.
+            continue
+        values = value.values() if isinstance(value, dict) else [value]
+        if not all(isinstance(v, str) and re.fullmatch(r'[0-9a-fA-F]{6}', v) for v in values):
+            raise ValueError(f'Invalid RGB color in {key}; use six hex digits without #')
+    p['_name'] = name
+    return p
+
+
+def wallpaper_path(value):
+    if value is None or value == '':
+        return None
+    if not isinstance(value, str) or value.startswith(('http://', 'https://')):
+        raise ValueError('wallpaper must be a local image path, or null to keep current wallpaper')
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = ROOT / path
+    if not path.is_file() or path.suffix.lower() not in {'.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp', '.avif'}:
+        raise ValueError(f'Wallpaper image not found or unsupported: {path}')
+    return path
+
+
+def terminal_colors(p):
+    defaults = {'background': p['bg'], 'foreground': p['fg'],
+                'selection-background': p['bg_soft'], 'selection-foreground': p['fg'],
+                'urls': p['accent']}
+    defaults.update(p.get('terminal', {}))
+    for prefix in ('regular', 'bright'):
+        for index in range(8):
+            if f'{prefix}{index}' not in defaults:
+                raise ValueError(f'Missing terminal.{prefix}{index}')
+    return defaults
+
+
+def replace_section(text, section, values):
+    lines = text.splitlines(keepends=True)
+    current = None
+    found = set()
+    for i, line in enumerate(lines):
+        match = re.match(r'\s*\[([^]]+)\]', line)
+        if match:
+            current = match[1]
+        if current == section:
+            match = re.match(r'(\s*)([\w-]+)\s*=.*', line)
+            if match and match[2] in values:
+                key = match[2]
+                lines[i] = f'{match[1]}{key}={values[key]}\n'
+                found.add(key)
+    if found != set(values):
+        raise ValueError(f'Missing keys in [{section}]: {set(values) - found}')
+    return ''.join(lines)
+
+
+def render(p):
+    result = {}
+    path = CONFIG / 'rofi/config.rasi'
+    text = path.read_text()
+    for key, value in {'bg': p['bg'], 'bg-alt': p['bg_alt'], 'bg-soft': p['bg_soft'],
+                       'fg': p['fg'], 'fg-dim': p['muted'], 'accent': p['accent'],
+                       'urgent': p['urgent'], 'border': p['border']}.items():
+        text, n = re.subn(rf'(?m)^(\s*{key}\s*:\s*)#[\da-fA-F]{{8}};',
+                          lambda m: m[1] + '#' + value + 'ff;', text, count=1)
+        if n != 1:
+            raise ValueError(f'Missing rofi color {key}')
+    result[path] = text
+
+    path = CONFIG / 'foot/foot.ini'
+    result[path] = replace_section(path.read_text(), 'colors', terminal_colors(p))
+
+    path = CONFIG / 'mango/conf.d/50-appearance.conf'
+    text = path.read_text()
+    colors = dict(rootcolor=p['bg'], bordercolor=p['border'], focuscolor=p['accent'],
+                  maximizescreencolor=p['accent'], scratchpadcolor=p['accent'])
+    colors.update(p.get('mango', {}))
+    for key, value in colors.items():
+        text, n = re.subn(rf'(?m)^{key}=0x[\da-fA-F]{{8}}$', f'{key}=0x{value}ff', text)
+        if n != 1:
+            raise ValueError(f'Missing Mango color {key}')
+    result[path] = text
+
+    path = CONFIG / 'rs-yambar/config.toml'
+    # All color occurrences have a semantic role, including inline styles.
+    roles = {'background': 'bg', 'foreground': 'fg', 'active_foreground': 'bg',
+             'active_background': 'accent', 'occupied_foreground': 'fg',
+             'occupied_underline': 'accent', 'empty_foreground': 'muted'}
+    lines = []
+    last_format = ''
+    foreground_count = 0
+    for line in path.read_text().splitlines():
+        match = re.match(r'format\s*=\s*"(.*)"', line)
+        if match:
+            last_format = match[1]
+        match = re.match(r'(\w+)\s*=\s*"#[\da-fA-F]{8}"', line)
+        if match and match[1] in roles:
+            key = match[1]
+            role = roles[key]
+            if key == 'foreground':
+                if foreground_count:
+                    role = 'muted' if last_format == '{date} ' else 'accent'
+                foreground_count += 1
+            line = re.sub(r'#[\da-fA-F]{8}', '#' + p[role] + 'ff', line)
+        lines.append(line)
+    result[path] = '\n'.join(lines) + '\n'
+
+    path = CONFIG / 'rs-wwidget/config.toml'
+    values = dict(background=p['bg'], foreground=p['fg'], muted=p['muted'], accent=p['accent'],
+                  green=p['green'], border=p['border'], bar_background=p['bg_soft'], grid_background=p['bg'])
+    values.update(p.get('widget', {}))
+    result[path] = replace_section(path.read_text(), 'colors', {k: f'"#{v}"' for k, v in values.items()})
+
+    path = CONFIG / 'dunst/dunstrc'
+    text = path.read_text()
+    common = dict(background=p['bg'], foreground=p['fg'], frame_color=p['accent'], highlight=p['accent'])
+    sections = {'global': {**common, 'separator_color': p['accent']},
+                'urgency_normal': common,
+                'urgency_low': dict(background=p.get('low_bg', p['bg_alt']), foreground=p['muted'],
+                                    frame_color=p['muted'], highlight=p['muted']),
+                'urgency_critical': {**common, 'frame_color': p['urgent'], 'highlight': p['urgent']}}
+    for section, values in sections.items():
+        values = {k: f'"#{v}ff"' for k, v in values.items()}
+        if section == 'global':
+            values['format'] = f'"<span foreground=\'#{p["accent"]}\'>%s</span>\\n%b"'
+        text = replace_section(text, section, values)
+    result[path] = text
+    result[ROOT / 'active.json'] = json.dumps({
+        **{k: v for k, v in p.items() if k != '_name'},
+        'name': p['_name'], 'terminal': terminal_colors(p),
+    }, indent=2) + '\n'
+    return result
+
+
+def validate(files):
+    with tempfile.TemporaryDirectory(prefix='desktop-theme-') as directory:
+        for path, text in files.items():
+            dest = Path(directory) / path.parent.name / path.name
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_text(text)
+            args = None
+            if path.parent.name == 'foot':
+                args = ['foot', '--check-config', '-c', str(dest)]
+            elif path.parent.name == 'rs-yambar':
+                args = ['rs-yambar', '--validate', '-c', str(dest)]
+            elif path.parent.name == 'rs-wwidget':
+                args = ['rs-wwidget', '--config', str(dest), '--check-config']
+            elif path.parent.name == 'rofi':
+                args = ['rofi', '-config', str(dest), '-dump-theme']
+            if args:
+                proc = run(args, capture_output=True)
+                if proc.returncode:
+                    raise ValueError(f'{path}: {proc.stderr or proc.stdout}')
+
+
+def atomic_write(path, text):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(dir=path.parent, prefix='.' + path.name)
+    try:
+        with os.fdopen(fd, 'w') as stream:
+            stream.write(text)
+        os.chmod(temporary, path.stat().st_mode & 0o777 if path.exists() else 0o600)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def update_terminals(p):
+    # Foot holds PTY master FDs. Write OSC to their slave ends (output only).
+    # Do not send input, restart the server, or interrupt running shells.
+    colors = terminal_colors(p)
+    osc = ''.join(f'\033]4;{i};#{colors[f"{prefix}{i % 8}"]}\033\\'
+                  for i, prefix in [(i, 'regular' if i < 8 else 'bright') for i in range(16)])
+    for code, key in [(10, 'foreground'), (11, 'background'), (12, 'foreground'),
+                      (17, 'selection-background'), (19, 'selection-foreground')]:
+        osc += f'\033]{code};#{colors[key]}\033\\'
+    seen = set()
+    for proc in Path('/proc').glob('[0-9]*'):
+        try:
+            if proc.stat().st_uid != os.getuid() or (proc / 'comm').read_text().strip() != 'foot':
+                continue
+            for info in (proc / 'fdinfo').iterdir():
+                match = re.search(r'^tty-index:\s*(\d+)$', info.read_text(), re.M)
+                if not match or match[1] in seen:
+                    continue
+                seen.add(match[1])
+                fd = os.open('/dev/pts/' + match[1], os.O_WRONLY | os.O_NOCTTY | os.O_NONBLOCK)
+                try:
+                    os.write(fd, osc.encode())
+                finally:
+                    os.close(fd)
+        except (OSError, ProcessLookupError) as error:
+            print(f'Terminal update: {error}', file=sys.stderr)
+    return len(seen)
+
+
+def apply_wallpaper(p):
+    path = wallpaper_path(p.get('wallpaper'))
+    if path is None:
+        return
+    # awww may still be starting when MangoWM runs exec-once commands.
+    import time
+    for _ in range(50):
+        if run(['awww', 'query'], capture_output=True).returncode == 0:
+            break
+        time.sleep(0.1)
+    proc = run(['awww', 'img', str(path), '--transition-type', 'fade',
+                '--transition-duration', '1', '--transition-fps', '60'], capture_output=True)
+    if proc.returncode:
+        raise ValueError('Could not apply wallpaper: ' + (proc.stderr or proc.stdout).strip())
+    cache = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache'))
+    atomic_write(cache / 'current_wallpaper', str(path) + '\n')
+    atomic_write(cache / 'current_wallpaper_mode', 'image\n')
+
+
+def refresh(p, restore=False):
+    errors = []
+    def attempt(args):
+        try:
+            result = run(args, capture_output=True)
+            if result.returncode:
+                errors.append(' '.join(args) + ': ' + (result.stderr or result.stdout).strip())
+        except (OSError, subprocess.TimeoutExpired) as error:
+            errors.append(str(error))
+    if os.environ.get('MANGO_INSTANCE_SIGNATURE') and not restore:
+        attempt(['mmsg', 'dispatch', 'reload_config'])
+    if run(['pgrep', '-u', str(os.getuid()), '-x', 'dunst'], capture_output=True).returncode == 0:
+        attempt(['dunstctl', 'reload'])
+    run(['pkill', '-u', str(os.getuid()), '-x', 'rs-yambar'], capture_output=True)
+    logdir = Path(os.environ.get('XDG_STATE_HOME', Path.home() / '.local/state')) / 'desktop-theme'
+    logdir.mkdir(parents=True, exist_ok=True)
+    with (logdir / 'rs-yambar.log').open('a') as log:
+        subprocess.Popen(['rs-yambar', '-c', str(CONFIG / 'rs-yambar/config.toml')],
+                         stdout=log, stderr=log, start_new_session=True)
+    # Keep a hidden/stopped widget hidden; restart only if currently running.
+    status = run(['pgrep', '-u', str(os.getuid()), '-x', 'rs-wwidget'], capture_output=True)
+    if status.returncode == 0:
+        attempt(['rs-wwidget', 'restart'])
+    count = update_terminals(p)
+    # Bootstrap the watcher in editors that were opened before integration.
+    runtime = Path(os.environ.get('XDG_RUNTIME_DIR', f'/run/user/{os.getuid()}'))
+    if shutil.which('nvim'):
+        import msgpack
+        # Notify instead of waiting for an RPC reply: a modal prompt may defer
+        # Lua execution until the editor resumes accepting normal commands.
+        message = msgpack.packb([2, 'nvim_exec_lua',
+                                ["require('config.desktop_theme').setup()", []]])
+        for endpoint in runtime.rglob('nvim.*.0'):
+            if endpoint.is_socket() and endpoint.stat().st_uid == os.getuid():
+                try:
+                    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+                        client.settimeout(1)
+                        client.connect(str(endpoint))
+                        client.sendall(message)
+                except OSError as error:
+                    print(f'Neovim update ({endpoint}): {error}', file=sys.stderr)
+    for error in errors:
+        print(error, file=sys.stderr)
+    print(f'Updated {count} open foot terminals')
+    return not errors
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('theme', nargs='?')
+    parser.add_argument('--check', action='store_true', help='Validate theme without writing or reloading')
+    parser.add_argument('--restore', action='store_true', help='Restore saved theme during session startup')
+    parser.add_argument('--list', action='store_true')
+    args = parser.parse_args()
+    names = sorted(p.stem for p in (ROOT / 'themes').glob('*.json'))
+    if args.list:
+        print('\n'.join(names)); return
+    current = (ROOT / 'current').read_text().strip() if (ROOT / 'current').exists() else 'cflowers'
+    name = args.theme
+    if args.restore:
+        name = current
+    if name is None:
+        proc = run(['rofi', '-dmenu', '-no-custom', '-p', f'theme ({current})', '-select', current,
+                    '-l', str(len(names)), '-theme-str', 'window { width: 280px; }'],
+                   input='\n'.join(names) + '\n', capture_output=True, timeout=None)
+        if proc.returncode or not proc.stdout.strip():
+            return
+        name = proc.stdout.strip()
+    ROOT.mkdir(parents=True, exist_ok=True)
+    with (ROOT / '.lock').open('w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        p = palette(name)
+        files = render(p)
+        validate(files)
+        if args.check:
+            print(f'{name}: valid ({len(files)} components)'); return
+        old = {path: path.read_text() if path.exists() else None for path in files}
+        try:
+            for path, text in files.items():
+                atomic_write(path, text)
+        except OSError:
+            for path, text in old.items():
+                if text is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    atomic_write(path, text)
+            raise
+        atomic_write(ROOT / 'current', name + '\n')
+        ok = refresh(p, args.restore)
+        try:
+            apply_wallpaper(p)
+        except (OSError, ValueError, subprocess.TimeoutExpired) as error:
+            print(error, file=sys.stderr)
+            ok = False
+        if not args.restore and shutil.which('notify-send'):
+            run(['notify-send', 'Theme', name if ok else f'{name}: see reload errors'])
+        if not ok:
+            sys.exit(1)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (OSError, ValueError, subprocess.TimeoutExpired) as error:
+        print(f'desktop-theme: {error}', file=sys.stderr)
+        sys.exit(1)

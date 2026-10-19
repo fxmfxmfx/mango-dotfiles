@@ -1,0 +1,20 @@
+#!/bin/sh
+
+target=${1:-"$HOME"}
+
+case "$target" in
+    file://*)
+        target=${target#file://}
+        target=$(printf '%s\n' "$target" | sed 's/%20/ /g')
+        ;;
+esac
+
+if [ -f "$target" ]; then
+    target=$(dirname -- "$target")
+fi
+
+if [ ! -d "$target" ]; then
+    target=$HOME
+fi
+
+exec foot --working-directory="$target"

@@ -16,7 +16,10 @@ rofi
 awww
 awww-daemon
 rs-yambar
+rs-wwidget
 dunst
+dunstctl
+notify-send
 wl-copy
 wl-paste
 cliphist
@@ -25,6 +28,7 @@ grim
 slurp
 swappy
 git
+nvim
 rg
 fd
 bat
@@ -38,8 +42,10 @@ sed
 head
 find
 sort
+file
 timeout
 pgrep
+pkill
 killall
 mktemp
 xdg-open
@@ -58,8 +64,6 @@ make
 gcc
 magick
 ffmpeg
-mpvpaper
-yt-dlp
 xsettingsd
 unzip
 fc-cache
@@ -126,8 +130,12 @@ done
 
 if command -v python3 >/dev/null 2>&1; then
     printf 'ok      required python3\n'
-elif command -v python >/dev/null 2>&1; then
-    printf 'ok      required python (python3 not found, python is fine)\n'
+    if python3 -c 'import msgpack' >/dev/null 2>&1; then
+        printf 'ok      required Python msgpack module\n'
+    else
+        printf 'missing required Python msgpack module (Neovim theme RPC)\n'
+        missing=1
+    fi
 else
     printf 'missing required python3\n'
     missing=1
