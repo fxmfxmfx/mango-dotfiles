@@ -24,7 +24,7 @@ account settings and session data are not part of this bundle.
 .config/vesktop/themes/
     GruvboxSharp.theme.css             # original preset
     CatppuccinMochaSharp.theme.css     # adapted preset
-    DesktopTheme.theme.css            # enable this managed stylesheet
+    DesktopTheme.theme.css            # optional: enable to sync Vesktop
 .local/bin/
     desktop-theme
     desktop-theme-browser-host
@@ -97,9 +97,10 @@ allowed-extension ID.
 
 ## Vesktop: optional CSS setup
 
-In Vesktop's **Settings > Vencord > Themes**, enable **Desktop Theme** once.
-Disable the other local theme selections and any remote theme links that would
-layer conflicting colors over it. Keep Discord's built-in dark appearance on.
+This requires Vesktop with Vencord's theme support enabled. In **Settings >
+Vencord > Themes**, enable **Desktop Theme** once. Disable the other local
+theme selections and any remote theme links that would layer conflicting colors
+over it. Keep Discord's built-in dark appearance on.
 
 | CSS file | Purpose |
 | --- | --- |
@@ -155,9 +156,11 @@ that appearance; it is not downloaded by this Catppuccin installer. Install it
 in `~/.themes`, `$XDG_DATA_HOME/themes` or a system theme directory. The Kvantum
 Gruvbox preset is already bundled. System theme names must match exactly.
 
-Repository palettes enable browser/Vesktop assignments by default. GTK/Qt
-synchronization is optional: add the following keys inside a palette's `apps`
-object after installing the relevant assets:
+Repository palettes declare LibreWolf and Vesktop assignments by default; they
+only take effect after you complete the optional app-specific setup above. The
+apps are not required for core desktop theme switching. GTK/Qt synchronization
+is also optional: add the following keys inside a palette's `apps` object after
+installing the relevant assets:
 
 ```json
 "gtk": "catppuccin-mocha-mauve-standard+default",

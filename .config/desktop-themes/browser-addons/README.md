@@ -1,8 +1,8 @@
 # Signed browser packages
 
-Install all three files once through LibreWolf/Firefox `about:addons` > gear >
-**Install Add-on From File**. These are persistent installations; do not load
-these packages through `about:debugging`.
+For optional LibreWolf/Firefox theme synchronization, install all three files
+once through `about:addons` > gear > **Install Add-on From File**. These are
+persistent installations; do not load these packages through `about:debugging`.
 
 | File | Role | Add-on ID |
 | --- | --- | --- |

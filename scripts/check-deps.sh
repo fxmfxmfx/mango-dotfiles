@@ -58,6 +58,7 @@ mpv
 imv
 thunar
 librewolf
+vesktop
 pavucontrol
 doas
 neo

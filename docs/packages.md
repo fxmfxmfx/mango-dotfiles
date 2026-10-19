@@ -47,6 +47,7 @@ repository and overlay, so treat this as the software surface the setup expects.
 - `imv`
 - `thunar`
 - `librewolf`
+- `vesktop` (for optional theme synchronization)
 - `pavucontrol`
 
 ## Shell And Editor
@@ -100,7 +101,10 @@ Video wallpaper packages are no longer used by this setup.
 
 ## Optional application presets
 
-The signed browser bundle needs the included native host and one-time addon
-installation. Vesktop requires Desktop Theme enabled once. The separate
-`install-app-themes.sh` needs curl, sha256sum, unzip and tar; GTK live updates
-use gsettings when available. See [app-themes.md](app-themes.md).
+LibreWolf and Vesktop are optional applications; neither is needed for the
+desktop theme switcher. To enable LibreWolf synchronization, register the
+included native host and install the signed add-ons once. To enable Vesktop
+synchronization, enable Desktop Theme once in Vencord. The separate
+`install-app-themes.sh` downloads optional GTK/Qt presets and needs `curl`,
+`sha256sum`, `unzip` and `tar`; GTK live updates use `gsettings` when available.
+See [app-themes.md](app-themes.md) for setup and theme assignments.

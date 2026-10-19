@@ -68,8 +68,9 @@ Rebuild them on systems with incompatible libraries:
 [rs-wwidget](https://github.com/fxmfxmfx/rs-wwidget).
 On Gentoo, the Python MessagePack package is commonly `dev-python/msgpack`;
 ensure it is enabled for the interpreter used by `python3`. The dependency
-checker verifies the actual import. See [packages.md](packages.md) for the
-rest of the desktop dependencies.
+checker verifies the actual import. See the
+[packages guide](https://github.com/fxmfxmfx/mango-dotfiles/blob/main/docs/packages.md)
+for the rest of the desktop dependencies.
 
 The installer moves retired helpers and data into its backup directory even
 with `--no-backup`; they are no longer present in the active configuration.
@@ -355,7 +356,8 @@ Application changes only recognized color fields in existing config layouts.
 It preserves fonts, geometry, keybindings, bar modules and unrelated options.
 If you rename/delete required fields or restructure the layouts, update the
 renderer too. Optional `apps` assignments select installed browser/Vesktop
-presets and, when configured, GTK/Qt presets. See [app-themes.md](app-themes.md).
+presets and, when configured, GTK/Qt presets. See the
+[app theme guide](https://github.com/fxmfxmfx/mango-dotfiles/blob/main/docs/app-themes.md).
 
 Configuration writes are atomic per file, not one transaction covering the
 entire desktop. Write errors trigger an attempt to restore prior file contents.
@@ -502,19 +504,22 @@ Lua module, extra script or keybinding needs to be written for another palette.
 
 ## Browser and application presets
 
-See [app-themes.md](app-themes.md) for the bundled signed browser packages,
-native handler setup, the three Vesktop CSS files and the optional GTK/Qt
-installer. `apps` is the optional object of application preset names/IDs,
-separate from the common RGB palette.
+See the [app theme guide](https://github.com/fxmfxmfx/mango-dotfiles/blob/main/docs/app-themes.md)
+for the bundled signed browser packages, native handler setup, the three
+Vesktop CSS files and the optional GTK/Qt installer. `apps` is the optional
+object of application preset names/IDs, separate from the common RGB palette.
 
 
-# Browser, Vesktop and optional GTK/Qt themes
+# Optional LibreWolf, Vesktop and GTK/Qt themes
 
-The normal dotfile installer copies the browser packages, native handler,
-Vesktop styles and application adapter. Browser installation and the Vesktop
-selection are one-time manual steps. GTK/Qt theme downloads are a separate,
-optional command. Profiles, cookies, account settings and session data are not
-part of this bundle.
+LibreWolf and Vesktop integration is optional; neither application is required
+for desktop theme switching. The normal dotfile installer copies the signed
+browser add-ons, native-messaging handler, Vesktop styles and application
+adapter, but does not install either application, add browser extensions to a
+profile or enable the Vesktop stylesheet. Those app-specific setup steps are
+manual and optional. GTK/Qt theme downloads are a separate optional command.
+Profiles, cookies, account settings and session data are not part of this
+bundle.
 
 ## Layout
 
@@ -531,7 +536,7 @@ part of this bundle.
 .config/vesktop/themes/
     GruvboxSharp.theme.css             # original preset
     CatppuccinMochaSharp.theme.css     # adapted preset
-    DesktopTheme.theme.css            # enable this managed stylesheet
+    DesktopTheme.theme.css            # optional: enable to sync Vesktop
 .local/bin/
     desktop-theme
     desktop-theme-browser-host
@@ -540,7 +545,7 @@ part of this bundle.
 scripts/install-app-themes.sh          # optional GTK/Qt preset download
 ```
 
-## Browser: install once
+## LibreWolf: optional setup
 
 After `./scripts/install.sh`:
 
@@ -602,11 +607,12 @@ Third-party browser-theme authors, sources and licenses are recorded in the
 bundle's README. The bridge's source ID must continue matching the native-host
 allowed-extension ID.
 
-## Vesktop: three CSS files, one enabled
+## Vesktop: optional CSS setup
 
-In Vesktop's **Settings > Vencord > Themes**, enable **Desktop Theme** once.
-Disable the other local theme selections and any remote theme links that would
-layer conflicting colors over it. Keep Discord's built-in dark appearance on.
+This requires Vesktop with Vencord's theme support enabled. In **Settings >
+Vencord > Themes**, enable **Desktop Theme** once. Disable the other local
+theme selections and any remote theme links that would layer conflicting colors
+over it. Keep Discord's built-in dark appearance on.
 
 | CSS file | Purpose |
 | --- | --- |
@@ -662,9 +668,11 @@ that appearance; it is not downloaded by this Catppuccin installer. Install it
 in `~/.themes`, `$XDG_DATA_HOME/themes` or a system theme directory. The Kvantum
 Gruvbox preset is already bundled. System theme names must match exactly.
 
-Repository palettes enable browser/Vesktop assignments by default. GTK/Qt
-synchronization is optional: add the following keys inside a palette's `apps`
-object after installing the relevant assets:
+Repository palettes declare LibreWolf and Vesktop assignments by default; they
+only take effect after you complete the optional app-specific setup above. The
+apps are not required for core desktop theme switching. GTK/Qt synchronization
+is also optional: add the following keys inside a palette's `apps` object after
+installing the relevant assets:
 
 ```json
 "gtk": "catppuccin-mocha-mauve-standard+default",
