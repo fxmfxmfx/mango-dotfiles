@@ -40,7 +40,14 @@ installer prints this config path, including the target of `--home`.
 
 ## Monitors
 
-Edit `.config/mango/conf.d/00-monitors.conf`.
+During interactive installation, enter the primary connector name when
+prompted; use `?` to list outputs if `wlr-randr` is installed. The installer
+updates that connector name in MangoWM, rs-yambar, rs-wwidget and `layout.sh`.
+For unattended installs, pass `--monitor-output NAME` to `install.sh`.
+
+This only changes the primary connector name. Edit
+`.config/mango/conf.d/00-monitors.conf` to change resolution, refresh rate,
+position or additional monitor rules.
 To set this nice, check Mango`s monitor docs:
 [mangowm.github.io/docs/configuration/monitors](https://mangowm.github.io/docs/configuration/monitors).
 

@@ -134,10 +134,10 @@ class HelperTests(unittest.TestCase):
                                  for p in self.home.rglob('*') if p.is_file()})
 
     def test_keyboard_layout_prompt_yes_and_no(self):
-        choices = [('y\n\n', 'us,ru', 'grp:lalt_lshift_toggle'),
-                   ('n\n', 'us', ''),
-                   ('y\nde\n', 'us,de', 'grp:lalt_lshift_toggle'),
-                   ('y\nrussian\n?\nua\n', 'us,ua', 'grp:lalt_lshift_toggle')]
+        choices = [('y\n\nDP-1\n', 'us,ru', 'grp:lalt_lshift_toggle'),
+                   ('n\nDP-1\n', 'us', ''),
+                   ('y\nde\nDP-1\n', 'us,de', 'grp:lalt_lshift_toggle'),
+                   ('y\nrussian\n?\nua\nDP-1\n', 'us,ua', 'grp:lalt_lshift_toggle')]
         for index, (answer, layouts, options) in enumerate(choices):
             with self.subTest(answer=answer):
                 target = self.root / ('interactive-' + str(index))

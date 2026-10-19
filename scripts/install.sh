@@ -9,6 +9,8 @@ dry_run=0
 skip_backup=0
 skip_fonts=0
 keyboard_layouts=
+primary_monitor=DP-1
+monitor_selected=0
 
 usage() {
     cat <<'EOF'
@@ -20,6 +22,8 @@ Options:
   --skip-fonts    Skip font copying/downloads (for offline config updates).
   --keyboard-layouts LIST
                   Set layouts without prompting: us or us,ru, for example.
+  --monitor-output NAME
+                  Set the primary display connector instead of DP-1.
   --home PATH     Install into PATH instead of $HOME.
   -h, --help      Show this help.
 
@@ -54,6 +58,21 @@ while [ "$#" -gt 0 ]; do
                     ;;
             esac
             ;;
+        --monitor-output)
+            shift
+            if [ "$#" -eq 0 ]; then
+                printf '%s\n' "install.sh: --monitor-output needs a connector name" >&2
+                exit 2
+            fi
+            primary_monitor=$1
+            monitor_selected=1
+            case "$primary_monitor" in
+                ''|[!A-Za-z0-9]*|*[!A-Za-z0-9._-]*)
+                    printf 'install.sh: invalid monitor connector name: %s\n' "$primary_monitor" >&2
+                    exit 2
+                    ;;
+            esac
+            ;;
         --home)
             shift
             if [ "$#" -eq 0 ]; then
@@ -74,6 +93,11 @@ while [ "$#" -gt 0 ]; do
     esac
     shift
 done
+
+if [ -z "$target_home" ]; then
+    printf '%s\n' 'install.sh: --home needs a nonempty path' >&2
+    exit 2
+fi
 
 backup_root=${DOTFILES_BACKUP_DIR:-"$target_home/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)-$$"}
 
@@ -159,6 +183,44 @@ if [ -z "$keyboard_layouts" ] && [ "$dry_run" -eq 0 ] && [ -t 0 ]; then
     done
 fi
 
+if [ "$monitor_selected" -eq 0 ] && [ "$dry_run" -eq 0 ] && [ -t 0 ]; then
+    monitor_outputs=
+    if command -v wlr-randr >/dev/null 2>&1; then
+        monitor_outputs=$(wlr-randr 2>/dev/null | awk '/^[^[:space:]]/ { print $1 }')
+    fi
+    while :; do
+        printf 'Primary monitor connector [DP-1] (? to list): '
+        if ! IFS= read -r answer; then
+            printf '\ninstall.sh: cancelled before installation\n' >&2
+            exit 1
+        fi
+        answer=${answer:-DP-1}
+        if [ "$answer" = '?' ]; then
+            if [ -n "$monitor_outputs" ]; then
+                printf '%s\n' "$monitor_outputs"
+            else
+                printf '%s\n' 'Could not detect outputs; enter the connector name shown by MangoWM.'
+            fi
+            continue
+        fi
+        case "$answer" in
+            ''|[!A-Za-z0-9]*|*[!A-Za-z0-9._-]*)
+                printf 'Invalid connector name: %s\n' "$answer"
+                ;;
+            *)
+                if [ -n "$monitor_outputs" ] &&
+                    ! printf '%s\n' "$monitor_outputs" | grep -Fx -- "$answer" >/dev/null; then
+                    printf 'Unknown connected monitor: %s\n' "$answer"
+                    continue
+                fi
+                primary_monitor=$answer
+                monitor_selected=1
+                break
+                ;;
+        esac
+    done
+fi
+
 if [ -n "$keyboard_layouts" ]; then
     layout_codes=$(printf '%s' "$keyboard_layouts" | tr ',' ' ')
     for layout_code in $layout_codes; do
@@ -226,6 +288,13 @@ copy_file() {
         sed -i \
             -e "s/^xkb_rules_layout=.*/xkb_rules_layout=$keyboard_layouts/" \
             -e "s/^xkb_rules_options=.*/xkb_rules_options=$keyboard_options/" "$dst"
+    fi
+    if [ "$monitor_selected" -eq 1 ] && [ "$primary_monitor" != DP-1 ]; then
+        case "$rel_path" in
+            .config/mango/conf.d/00-monitors.conf|.config/mango/conf.d/20-autostart.conf|.config/rs-yambar/config.toml|.config/rs-wwidget/config.toml|.local/bin/layout.sh)
+                sed -i "s/DP-1/$primary_monitor/g" "$dst"
+                ;;
+        esac
     fi
     printf 'install %s\n' "$dst"
 }
@@ -343,7 +412,9 @@ fi
 
 if [ "$dry_run" -eq 1 ]; then
     printf 'Keyboard layouts (planned): %s\n' "${keyboard_layouts:-repository defaults}"
+    printf 'Primary monitor connector (planned): %s\n' "$primary_monitor"
 else
     printf 'Keyboard layouts: %s\n' "${keyboard_layouts:-repository defaults (no interactive terminal)}"
+    printf 'Primary monitor connector: %s\n' "$primary_monitor"
 fi
 printf 'Customize xkb_rules_layout and xkb_rules_options in %s/.config/mango/conf.d/10-input.conf for your languages and shortcut.\n' "$target_home"

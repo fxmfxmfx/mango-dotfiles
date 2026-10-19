@@ -57,12 +57,20 @@ In a terminal, installation asks whether to enable **Alt+Shift** keyboard layout
 switching, then asks for the second layout code (default `ru`, with `us` first).
 Enter another code such as `de` or `ua`, or `?` to list available layouts.
 Codes are checked against installed XKB data; invalid choices are requested
-again. Declining switching installs only `us`.
+again. This prompt requires `xkeyboard-config` (or an equivalent XKB data
+directory). Declining switching installs only `us`.
+
+The installer also asks for the primary monitor connector (default `DP-1`).
+Enter `?` to list outputs when `wlr-randr` is available. The selected name is
+applied to MangoWM, rs-yambar, rs-wwidget and `layout.sh`; resolution and screen
+position remain in `.config/mango/conf.d/00-monitors.conf` for manual editing.
 
 For installation without prompts, pass `--keyboard-layouts us,ru` or
-`--keyboard-layouts us`. Without a terminal or during a dry run, no questions
-are asked; without this option, the repository's keyboard defaults are copied.
-The installer prints the input config path so you can customize it later.
+`--keyboard-layouts us`, and optionally `--monitor-output DP-1` (replace it
+with your connector name). Without a terminal or during a dry run, no questions
+are asked; without these options, the repository's keyboard and monitor
+defaults are copied. The installer prints the input config path so you can
+customize it later.
 
 Run Mango from a TTY with:
 
@@ -80,6 +88,7 @@ Wayland tooling and a POSIX-compatible shell.
 - `.config/rs-wwidget` - desktop widgets
 - `.config/rs-yambar` - top bar with Mango workspace and keyboard-layout scripts
 - `.config/foot`, `.config/rofi`, `.config/dunst` - terminal, launcher and notifications
+- `.config/vesktop` - bundled Discord client themes
 - `.config/nvim` - Neovim config using lazy.nvim (minimal on purpose)
 - `.local/bin` - theme, terminal, screenshot, clipboard, layout, portal and wallpaper helpers
 - `scripts` - installer and dependency checker
@@ -89,8 +98,9 @@ Wayland tooling and a POSIX-compatible shell.
 ## Global Themes
 
 One JSON file controls MangoWM, rofi, foot, Neovim, dunst, rs-yambar and
-rs-wwidget. Each theme can assign a default image wallpaper. Gruvbox uses
-`~/Wallpaper/prism.png`; cflowers and Catppuccin Mocha keep their own images. Open terminals
+rs-wwidget. Each theme can assign a default image wallpaper: cflowers uses
+`~/Wallpaper/cupsizeflowers.jpg`, Gruvbox uses `~/Wallpaper/prism.png`, and
+Catppuccin Mocha uses `~/Wallpaper/gentoo.png`. Open terminals
 and editors update without restarting. Optional app mappings also synchronize
 LibreWolf and Vesktop. GTK/Qt preset installation and synchronization are opt-in.
 
@@ -126,8 +136,18 @@ Catppuccin GTK/Qt presets; the normal installer does not run it. See
   [mangowm.github.io/docs/configuration/monitors](https://mangowm.github.io/docs/configuration/monitors).
 - [rs-yambar](https://github.com/fxmfxmfx/rs-yambar) is pinned to `DP-1` in
   `.config/rs-yambar/config.toml`. The workspace script can read
-  `YAMBAR_MANGO_OUTPUT`, but the bar config and click actions still need edits
-  if your output has another name.
+  `YAMBAR_MANGO_OUTPUT`; if you change outputs after installation, update the
+  bar config and click actions too.
+- `rs-wwidget` is also pinned to `DP-1` in
+  `.config/rs-wwidget/config.toml`; change its `monitor` value for another
+  display. See [monitor customization](docs/customize.md#bar-output) for both
+  output settings and the Mango monitor config.
+- `DP-1` is the default primary connector in the repository configs. During
+  interactive installation, the installer asks which connector to use and
+  updates MangoWM, rs-yambar, rs-wwidget and `layout.sh`; for unattended runs,
+  pass `--monitor-output NAME`. This changes the connector name only. Edit
+  `.config/mango/conf.d/00-monitors.conf` separately for resolution, refresh
+  rate, position or additional outputs.
 - `layout.sh` defaults to `DP-1`; override with `MANGO_OUTPUT=...` if needed.
 - Wallpaper picker reads images from `~/Wallpaper` by default. Override with
   `WALLPAPER_DIR=/path/to/wallpapers`.
@@ -200,11 +220,23 @@ These are mostly command-line tools used by helper scripts. Prefer
 
 ### Optional Apps And Tools
 
+Optional apps:
+
 - `mpv`
 - `imv`
 - `thunar`
 - `librewolf`
 - `pavucontrol`
+
+Other commands reported as optional by `check-deps.sh`:
+
+- `doas`
+- [`neo`](https://github.com/st3w/neo)
+- `make` and `gcc` (for compiling Treesitter parsers)
+- `magick` (ImageMagick) and `ffmpeg`
+- `xsettingsd` and `gsettings`
+- `kvantummanager` and `qt6ct`
+- `unzip`, `sha256sum` and `fc-cache`
 
 ### Shell And Editor
 
@@ -221,14 +253,13 @@ These are mostly command-line tools used by helper scripts. Prefer
 - [`eza`](https://github.com/eza-community/eza)
 - [`bat`](https://github.com/sharkdp/bat)
 - [`dust`](https://github.com/bootandy/dust)
-- `doas`
-- [`neo`](https://github.com/st3w/neo)
 
 ### UI And Themes
 
 - [`Symbols Nerd Font Mono`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`JetBrainsMono Nerd Font`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
-- [`Gruvbox-Dark-Soft`](https://github.com/morhetz/gruvbox) - GTK theme (installed under `~/.themes`)
+- [`Gruvbox-Dark-Soft`](https://github.com/morhetz/gruvbox) - external GTK theme
+  prerequisite; install under `~/.themes` or another GTK theme directory
 - `gruvbox-kvantum` - Kvantum style for Qt apps (bundled in `.config/Kvantum`)
 - Catppuccin Mocha/Mauve GTK 3/4 and Kvantum themes are available through the optional `scripts/install-app-themes.sh` installer
 - Signed LibreWolf themes: Gruvbox Dark and Catppuccin
