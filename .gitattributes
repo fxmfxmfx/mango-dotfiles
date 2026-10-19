@@ -1,0 +1,3 @@
+# Large upstream Vesktop theme styles are assets, not project source code.
+.config/vesktop/themes/GruvboxSharp.theme.css linguist-vendored=true
+.config/vesktop/themes/CatppuccinMochaSharp.theme.css linguist-vendored=true
