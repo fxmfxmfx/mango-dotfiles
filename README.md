@@ -218,7 +218,6 @@ These are mostly command-line tools used by helper scripts. Prefer
 - [`bat`](https://github.com/sharkdp/bat)
 - [`dust`](https://github.com/bootandy/dust)
 - `doas`
-- [`tty-clock`](https://github.com/xorg62/tty-clock)
 - [`neo`](https://github.com/st3w/neo)
 
 ### UI And Themes
@@ -227,6 +226,9 @@ These are mostly command-line tools used by helper scripts. Prefer
 - [`JetBrainsMono Nerd Font`](https://www.nerdfonts.com/) - install via [nix-fonts](https://github.com/nerd-fonts/nerd-fonts) or your package manager
 - [`Gruvbox-Dark-Soft`](https://github.com/morhetz/gruvbox) - GTK theme (installed under `~/.themes`)
 - `gruvbox-kvantum` - Kvantum style for Qt apps (bundled in `.config/Kvantum`)
+- Catppuccin Mocha/Mauve GTK 3/4 and Kvantum themes are available through the optional `scripts/install-app-themes.sh` installer
+- Signed LibreWolf themes: Gruvbox Dark and Catppuccin
+- Vesktop CSS themes: Gruvbox Sharp and Catppuccin Mocha Sharp; both are bundled in `.config/vesktop/themes`
 - `Adwaita` - GTK/Qt icons; `Papirus-Dark` - rofi icons; `Bibata-Modern-Ice` - cursor
 
 MxPlus IBM VGA 8x16 MidTilde font is included in `fonts/` directory.

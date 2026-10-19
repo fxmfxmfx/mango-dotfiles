@@ -60,7 +60,6 @@ thunar
 librewolf
 pavucontrol
 doas
-tty-clock
 neo
 make
 gcc
