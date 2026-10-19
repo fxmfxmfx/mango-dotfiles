@@ -2,7 +2,7 @@
 
 Personal [MangoWM](https://github.com/mangowm/mango) dotfiles for Gentoo GNU/Linux.
 
-![MangoWM desktop](screenshots/screenshot.png)
+![MangoWM desktop](screenshots/desktop-current.png)
 
 <details>
 <summary>More screenshots</summary>
