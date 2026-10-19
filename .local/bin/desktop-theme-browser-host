@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+"""Restricted native-messaging host: expose only the selected browser theme ID."""
+import json
+import os
+from pathlib import Path
+import select
+import struct
+import sys
+import tempfile
+import time
+
+ROOT = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config')) / 'desktop-themes'
+MAX_MESSAGE = 65536
+
+
+def read_exact(stream, size):
+    result = b''
+    while len(result) < size:
+        chunk = stream.read(size - len(result))
+        if not chunk:
+            return result
+        result += chunk
+    return result
+
+
+def read_message(stream):
+    header = read_exact(stream, 4)
+    if not header:
+        return None
+    if len(header) != 4:
+        raise ValueError('Incomplete native-message header')
+    size = struct.unpack('<I', header)[0]
+    if size > MAX_MESSAGE:
+        raise ValueError('Native message too large')
+    payload = read_exact(stream, size)
+    if len(payload) != size:
+        raise ValueError('Incomplete native message')
+    result = json.loads(payload)
+    if not isinstance(result, dict):
+        raise ValueError('Native message must be an object')
+    return result
+
+
+def send_message(stream, message):
+    data = json.dumps(message, separators=(',', ':')).encode()
+    stream.write(struct.pack('<I', len(data)) + data)
+    stream.flush()
+
+
+def theme_state():
+    try:
+        path = ROOT / 'active.json'
+        data = json.loads(path.read_text())
+        generation = str(path.stat().st_mtime_ns)
+        apps = data.get('apps', {}) if isinstance(data, dict) else {}
+        theme = apps.get('librewolf') if isinstance(apps, dict) else None
+        if not isinstance(theme, str) or not theme or len(theme) > 256:
+            theme = None
+    except (OSError, ValueError, TypeError):
+        theme = None
+        generation = None
+    return {'type': 'state', 'theme_id': theme, 'generation': generation}
+
+
+def record_status(message):
+    data = {'ok': message.get('ok') is True,
+            'theme_id': str(message.get('theme_id') or '')[:256],
+            'message': str(message.get('message') or '')[:500],
+            'updated': int(time.time())}
+    path = ROOT / 'librewolf-bridge-status.json'
+    fd, name = tempfile.mkstemp(dir=ROOT, prefix='.browser-status-')
+    try:
+        with os.fdopen(fd, 'w') as stream:
+            stream.write(json.dumps(data) + '\n')
+        os.replace(name, path)
+    finally:
+        if os.path.exists(name):
+            os.unlink(name)
+
+
+def main():
+    # Unbuffered stdin avoids read-ahead conflicting with select() in watch mode.
+    source = os.fdopen(os.dup(sys.stdin.fileno()), 'rb', buffering=0)
+    first = read_message(source)
+    if first is None:
+        return
+    if first.get('op') not in {'watch', 'get'}:
+        raise ValueError('Only watch/get operations are supported initially')
+    state = theme_state()
+    send_message(sys.stdout.buffer, state)
+    if first['op'] == 'get':
+        return
+    while True:
+        ready, _, _ = select.select([source], [], [], 1)
+        if ready:
+            message = read_message(source)
+            if message is None:
+                return
+            if message.get('op') == 'status':
+                record_status(message)
+            elif message.get('op') == 'get':
+                send_message(sys.stdout.buffer, theme_state())
+        current = theme_state()
+        if current != state:
+            state = current
+            send_message(sys.stdout.buffer, state)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (OSError, ValueError, BrokenPipeError) as error:
+        print(f'desktop-theme browser host: {error}', file=sys.stderr)
+        sys.exit(1)

@@ -26,5 +26,9 @@
     "bright6": "8ec07c",
     "bright7": "ebdbb2"
   },
-  "wallpaper": "~/Wallpaper/vim.png"
+  "wallpaper": "~/Wallpaper/prism.png",
+  "apps": {
+    "vesktop": "GruvboxSharp.theme.css",
+    "librewolf": "{eb8c4a94-e603-49ef-8e81-73d3c4cc04ff}"
+  }
 }

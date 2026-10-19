@@ -22,3 +22,11 @@
 
 __pycache__/
 *.py[cod]
+
+# Application integration state; signed browser-addons/*.xpi are intentional assets.
+.config/vesktop/settings/
+.config/vesktop/sessionData/
+.config/desktop-themes/librewolf-bridge-status.json
+.config/desktop-themes/.browser-status-*
+.config/desktop-themes/browser-bridge-unsigned.xpi
+.config/desktop-themes/desktop-theme-browser.xpi

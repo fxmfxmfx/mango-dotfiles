@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""Register the local browser host and locate the bundled signed add-ons."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import zipfile
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--check', action='store_true', help='Check bundled packages without registering the host')
+parser.add_argument('--build-unsigned', action='store_true', help='Developer-only: build a separate unsigned XPI from source')
+args = parser.parse_args()
+config = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
+root = config / 'desktop-themes'
+source = root / 'browser-extension'
+assets = root / 'browser-addons'
+host = Path(__file__).resolve().with_name('desktop-theme-browser-host')
+if not host.is_file() or not os.access(host, os.X_OK):
+    raise SystemExit(f'Native host not executable: {host}')
+expected = {'desktop-theme-bridge-1.0.0.xpi', 'gruvbox-dark-1.1.xpi', 'catppuccin-1.0.xpi'}
+checks = {}
+for line in (assets / 'SHA256SUMS').read_text().splitlines():
+    digest, name = line.split(maxsplit=1)
+    if name not in expected:
+        raise SystemExit(f'Unexpected package in checksum list: {name}')
+    checks[name] = digest
+if set(checks) != expected:
+    raise SystemExit('Incomplete browser package checksum list')
+for name in sorted(expected):
+    package = assets / name
+    if hashlib.sha256(package.read_bytes()).hexdigest() != checks[name]:
+        raise SystemExit(f'Package checksum mismatch: {package}')
+    with zipfile.ZipFile(package) as zipped:
+        if zipped.testzip() is not None or 'META-INF/mozilla.rsa' not in zipped.namelist():
+            raise SystemExit(f'Package is corrupt or has no Mozilla signature material: {package}')
+        if name.startswith('desktop-theme-bridge'):
+            manifest = json.loads(zipped.read('manifest.json'))
+            if manifest['browser_specific_settings']['gecko']['id'] != 'desktop-theme@mango-dotfiles.local':
+                raise SystemExit('Bundled bridge ID does not match the native host')
+    print('Checked:', package)
+if args.check:
+    raise SystemExit(0)
+manifest = {
+    'name': 'io.github.fxmfxmfx.desktop_theme',
+    'description': 'Installed browser theme selection from desktop-theme',
+    'path': str(host), 'type': 'stdio',
+    'allowed_extensions': ['desktop-theme@mango-dotfiles.local'],
+}
+for directory in [Path.home() / '.mozilla/native-messaging-hosts',
+                  Path.home() / '.librewolf/native-messaging-hosts',
+                  config / 'librewolf/native-messaging-hosts']:
+    directory.mkdir(parents=True, exist_ok=True)
+    target = directory / 'io.github.fxmfxmfx.desktop_theme.json'
+    target.write_text(json.dumps(manifest, indent=2) + '\n')
+    target.chmod(0o600)
+    print('Registered:', target)
+if args.build_unsigned:
+    archive = root / 'browser-bridge-unsigned.xpi'
+    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zipped:
+        for name in ['manifest.json', 'background.js', 'popup.html', 'popup.js']:
+            zipped.write(source / name, name)
+    print('Developer unsigned build:', archive)
+print('Install the three checked XPI files once using about:addons > Install Add-on From File.')
+print('The browser verifies their signatures. No signing account or temporary loading is needed.')

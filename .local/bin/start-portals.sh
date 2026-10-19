@@ -48,17 +48,20 @@ start_portal() {
     "$binary" &
 }
 
+status=0
 start_portal \
     xdg-desktop-portal \
     /usr/libexec/xdg-desktop-portal \
-    /usr/lib/xdg-desktop-portal
+    /usr/lib/xdg-desktop-portal || status=1
 
 start_portal \
     xdg-desktop-portal-gtk \
     /usr/libexec/xdg-desktop-portal-gtk \
-    /usr/lib/xdg-desktop-portal-gtk
+    /usr/lib/xdg-desktop-portal-gtk || status=1
 
 start_portal \
     xdg-desktop-portal-wlr \
     /usr/libexec/xdg-desktop-portal-wlr \
-    /usr/lib/xdg-desktop-portal-wlr
+    /usr/lib/xdg-desktop-portal-wlr || status=1
+
+exit "$status"

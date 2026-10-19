@@ -24,6 +24,8 @@ repository and overlay, so treat this as the software surface the setup expects.
 ## Script Dependencies
 
 - `bash`
+- `curl` and `tar` (font downloads during normal installation;
+  `install.sh --skip-fonts` avoids that step)
 - `notify-send` (libnotify), `dunstctl`, `pgrep`, `pkill`
 - GNU `coreutils`
 - `findutils`
@@ -93,3 +95,10 @@ but missing optional commands do not make the check fail.
 
 See [themes.md](themes.md) for the theme helper requirements and configuration.
 Video wallpaper packages are no longer used by this setup.
+
+## Optional application presets
+
+The signed browser bundle needs the included native host and one-time addon
+installation. Vesktop requires Desktop Theme enabled once. The separate
+`install-app-themes.sh` needs curl, sha256sum, unzip and tar; GTK live updates
+use gsettings when available. See [app-themes.md](app-themes.md).

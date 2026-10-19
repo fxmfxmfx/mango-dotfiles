@@ -7,6 +7,8 @@ target_home=${HOME:?HOME is not set}
 backup_root=
 dry_run=0
 skip_backup=0
+skip_fonts=0
+keyboard_layouts=
 
 usage() {
     cat <<'EOF'
@@ -15,11 +17,15 @@ Usage: ./scripts/install.sh [options]
 Options:
   --dry-run       Show what would be installed without changing files.
   --no-backup     Overwrite existing files without moving them to a backup.
+  --skip-fonts    Skip font copying/downloads (for offline config updates).
+  --keyboard-layouts LIST
+                  Set layouts without prompting: us or us,ru, for example.
   --home PATH     Install into PATH instead of $HOME.
   -h, --help      Show this help.
 
 Environment:
   DOTFILES_BACKUP_DIR  Backup directory for overwritten files.
+  XKB_CONFIG_ROOT     Optional XKB data directory (contains rules/evdev.lst).
 EOF
 }
 
@@ -30,6 +36,23 @@ while [ "$#" -gt 0 ]; do
             ;;
         --no-backup)
             skip_backup=1
+            ;;
+        --skip-fonts)
+            skip_fonts=1
+            ;;
+        --keyboard-layouts)
+            shift
+            if [ "$#" -eq 0 ]; then
+                printf '%s\n' "install.sh: --keyboard-layouts needs a comma-separated list" >&2
+                exit 2
+            fi
+            keyboard_layouts=$1
+            case "$keyboard_layouts" in
+                ''|,*|*,|*,,*|*[!A-Za-z0-9_,]*)
+                    printf '%s\n' "install.sh: invalid keyboard layout list: $keyboard_layouts" >&2
+                    exit 2
+                    ;;
+            esac
             ;;
         --home)
             shift
@@ -52,7 +75,110 @@ while [ "$#" -gt 0 ]; do
     shift
 done
 
-backup_root=${DOTFILES_BACKUP_DIR:-"$target_home/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"}
+backup_root=${DOTFILES_BACKUP_DIR:-"$target_home/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)-$$"}
+
+# Refuse reused backup runs before any home files are changed.
+if [ "$dry_run" -eq 0 ] && { [ -e "$backup_root" ] || [ -L "$backup_root" ]; }; then
+    if [ ! -d "$backup_root" ] || [ -L "$backup_root" ] ||
+        [ -n "$(find "$backup_root" -mindepth 1 -maxdepth 1 -print -quit)" ]; then
+        printf 'install.sh: refusing to reuse a nonempty backup directory: %s\n' "$backup_root" >&2
+        exit 1
+    fi
+fi
+
+load_keyboard_layouts() {
+    xkb_rules=
+    # Keep a custom root intact even when its path contains spaces.
+    if [ -n "${XKB_CONFIG_ROOT:-}" ]; then
+        for rules in "$XKB_CONFIG_ROOT/rules/evdev.lst" "$XKB_CONFIG_ROOT/rules/base.lst"; do
+            if [ -r "$rules" ]; then xkb_rules=$rules; break; fi
+        done
+    else
+        for root in /usr/share/X11/xkb /usr/share/xkeyboard-config-2; do
+            for rules in "$root/rules/evdev.lst" "$root/rules/base.lst"; do
+                if [ -r "$rules" ]; then xkb_rules=$rules; break 2; fi
+            done
+        done
+    fi
+    if [ -z "$xkb_rules" ]; then
+        printf 'install.sh: cannot validate layouts; install xkeyboard-config or set XKB_CONFIG_ROOT to its data directory.\n' >&2
+        exit 1
+    fi
+    available_layouts=$(awk '
+        /^![[:space:]]+layout[[:space:]]*$/ { active=1; next }
+        /^!/ { active=0 }
+        active && NF { print $1 }
+    ' "$xkb_rules")
+    if [ -z "$available_layouts" ]; then
+        printf 'install.sh: no keyboard layouts found in %s\n' "$xkb_rules" >&2
+        exit 1
+    fi
+}
+
+keyboard_layout_exists() {
+    printf '%s\n' "$available_layouts" | grep -Fx -- "$1" >/dev/null
+}
+
+if [ -n "$keyboard_layouts" ] || { [ "$dry_run" -eq 0 ] && [ -t 0 ]; }; then
+    load_keyboard_layouts
+fi
+
+if [ -z "$keyboard_layouts" ] && [ "$dry_run" -eq 0 ] && [ -t 0 ]; then
+    while :; do
+        printf 'Enable keyboard layout switching with Alt+Shift? [Y/n] '
+        if ! IFS= read -r answer; then
+            printf '\ninstall.sh: cancelled before installation\n' >&2
+            exit 1
+        fi
+        case "$answer" in
+            ''|y|Y|yes|YES)
+                while :; do
+                    printf 'Second keyboard layout [ru] (? to list): '
+                    if ! IFS= read -r second_layout; then
+                        printf '\ninstall.sh: cancelled before installation\n' >&2
+                        exit 1
+                    fi
+                    second_layout=${second_layout:-ru}
+                    if [ "$second_layout" = '?' ]; then
+                        awk '/^![[:space:]]+layout[[:space:]]*$/ { active=1; next }
+                             /^!/ { active=0 } active && NF { print }' "$xkb_rules"
+                    elif [ "$second_layout" = us ]; then
+                        printf 'US is already the first layout; choose a different second layout.\n'
+                    elif keyboard_layout_exists "$second_layout"; then
+                        keyboard_layouts=us,$second_layout
+                        break
+                    else
+                        printf 'Unknown XKB layout: %s. Use a code such as ru, de or ua, or ? to list.\n' "$second_layout"
+                    fi
+                done
+                break
+                ;;
+            n|N|no|NO) keyboard_layouts=us; break ;;
+            *) printf 'Please answer y or n.\n' ;;
+        esac
+    done
+fi
+
+if [ -n "$keyboard_layouts" ]; then
+    layout_codes=$(printf '%s' "$keyboard_layouts" | tr ',' ' ')
+    for layout_code in $layout_codes; do
+        if ! keyboard_layout_exists "$layout_code"; then
+            printf 'install.sh: unknown XKB keyboard layout: %s\n' "$layout_code" >&2
+            exit 2
+        fi
+    done
+    case "$keyboard_layouts" in
+        *,*) keyboard_options=grp:lalt_lshift_toggle ;;
+        *) keyboard_options= ;;
+    esac
+fi
+
+check_backup_path() {
+    if [ -e "$1" ] || [ -L "$1" ]; then
+        printf 'install.sh: refusing to overwrite an existing backup: %s\n' "$1" >&2
+        exit 1
+    fi
+}
 
 copy_file() {
     rel_path=$1
@@ -60,10 +186,10 @@ copy_file() {
     dst=$target_home/$rel_path
 
     case "$rel_path" in
-        .cache/*|.local/share/*|.local/state/*)
+        .cache/*|.local/share/*|.local/state/*|.config/vesktop/settings/*|.config/vesktop/sessionData/*)
             return
             ;;
-        *.log|*.bak|*.swp|*.swo|*.pyc|*.pyo|*/__pycache__/*)
+        *.log|*.bak|*.swp|*.swo|*.pyc|*.pyo|*/__pycache__/*|.config/desktop-themes/librewolf-bridge-status.json|.config/desktop-themes/.browser-status-*|.config/desktop-themes/browser-bridge-unsigned.xpi|.config/desktop-themes/desktop-theme-browser.xpi)
             return
             ;;
         .config/desktop-themes/active.json|.config/desktop-themes/current|.config/desktop-themes/.lock|.config/desktop-themes/backup*/*)
@@ -84,6 +210,7 @@ copy_file() {
     if [ -e "$dst" ] || [ -L "$dst" ]; then
         if [ "$skip_backup" -eq 0 ]; then
             backup_path=$backup_root/$rel_path
+            check_backup_path "$backup_path"
             mkdir -p -- "$(dirname -- "$backup_path")"
             mv -- "$dst" "$backup_path"
             printf 'backup  %s -> %s\n' "$dst" "$backup_path"
@@ -95,6 +222,11 @@ copy_file() {
     fi
 
     cp -Pp -- "$src" "$dst"
+    if [ "$rel_path" = .config/mango/conf.d/10-input.conf ] && [ -n "$keyboard_layouts" ]; then
+        sed -i \
+            -e "s/^xkb_rules_layout=.*/xkb_rules_layout=$keyboard_layouts/" \
+            -e "s/^xkb_rules_options=.*/xkb_rules_options=$keyboard_options/" "$dst"
+    fi
     printf 'install %s\n' "$dst"
 }
 
@@ -108,6 +240,7 @@ retire_file() {
     fi
     # Keep retired helpers recoverable, including with --no-backup.
     backup_path=$backup_root/retired/$rel_path
+    check_backup_path "$backup_path"
     mkdir -p -- "$(dirname -- "$backup_path")"
     mv -- "$dst" "$backup_path"
     printf 'retire  %s -> %s\n' "$dst" "$backup_path"
@@ -200,8 +333,17 @@ for retired in \
     retire_file "$retired"
 done
 
-install_fonts
+if [ "$skip_fonts" -eq 0 ]; then
+    install_fonts
+fi
 
 if [ "$dry_run" -eq 0 ] && [ "$skip_backup" -eq 0 ]; then
     printf 'backup directory: %s\n' "$backup_root"
 fi
+
+if [ "$dry_run" -eq 1 ]; then
+    printf 'Keyboard layouts (planned): %s\n' "${keyboard_layouts:-repository defaults}"
+else
+    printf 'Keyboard layouts: %s\n' "${keyboard_layouts:-repository defaults (no interactive terminal)}"
+fi
+printf 'Customize xkb_rules_layout and xkb_rules_options in %s/.config/mango/conf.d/10-input.conf for your languages and shortcut.\n' "$target_home"

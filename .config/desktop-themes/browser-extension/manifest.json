@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "Mango Desktop Theme Bridge",
+  "version": "1.0.0",
+  "description": "Select an installed browser theme from the local desktop-theme preset.",
+  "permissions": [
+    "management",
+    "nativeMessaging"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_action": {
+    "default_title": "Desktop Theme",
+    "default_popup": "popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "desktop-theme@mango-dotfiles.local",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}

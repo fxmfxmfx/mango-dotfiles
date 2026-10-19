@@ -29,7 +29,8 @@ Bundled themes:
 | Name | Appearance | Default wallpaper |
 | --- | --- | --- |
 | `cflowers` | Original desktop, terminal and editor colors | `~/Wallpaper/cupsizeflowers.jpg` |
-| `gruvbox` | Dark Gruvbox palette | `~/Wallpaper/vim.png` |
+| `gruvbox` | Dark Gruvbox palette | `~/Wallpaper/prism.png` |
+| `catppuccin-mocha` | Catppuccin Mocha with a mauve accent | `~/Wallpaper/gentoo.png` |
 
 The selected name is saved and restored at the next MangoWM login.
 Applying the current theme again also reloads edits to its JSON and restores
@@ -89,6 +90,7 @@ Default layout:
     themes/
         cflowers.json
         gruvbox.json
+        catppuccin-mocha.json
     current           # generated: selected theme name
     active.json       # generated: resolved palette for Neovim
     .lock             # serializes application of themes
@@ -352,8 +354,8 @@ MangoWM config reload. It still performs validation and component refresh.
 Application changes only recognized color fields in existing config layouts.
 It preserves fonts, geometry, keybindings, bar modules and unrelated options.
 If you rename/delete required fields or restructure the layouts, update the
-renderer too. GTK/Qt themes are outside the global palette; they retain their
-own appearance.
+renderer too. Optional `apps` assignments select installed browser/Vesktop
+presets and, when configured, GTK/Qt presets. See [app-themes.md](app-themes.md).
 
 Configuration writes are atomic per file, not one transaction covering the
 entire desktop. Write errors trigger an attempt to restore prior file contents.
@@ -452,8 +454,55 @@ sh -n scripts/check-deps.sh
 ```
 
 The unit tests use temporary configuration roots and mock live reloads. They
-cover both bundled palettes, validation without writes, color updates with
+cover the bundled palettes, validation without writes, color updates with
 layout preservation, invalid wallpaper rejection, relative paths and rollback
 after a simulated write failure. They do not restart your desktop components.
 After installation, also run `desktop-theme --check cflowers` and
 `desktop-theme --check gruvbox` to exercise the actual application validators.
+
+
+## Worked example: Catppuccin Mocha
+
+The bundled `catppuccin-mocha.json` adapts the
+[official Mocha palette](https://catppuccin.com/palette/#mocha) to this theme
+system. It uses Base for the main background, Mantle for secondary surfaces,
+Surface 0 for selections, Text for foreground, Subtext 0 for muted text, Mauve
+for the accent, Red for urgency, Surface 1 for borders and Green for positive
+indicators. The terminal ANSI slots use the corresponding named Mocha colors;
+Neovim keeps this setup's existing syntax-to-ANSI mapping.
+
+Its assigned wallpaper is `~/Wallpaper/gentoo.png`. To try it:
+
+```sh
+desktop-theme --check catppuccin-mocha
+desktop-theme catppuccin-mocha
+```
+
+To make a personal variant, keep the complete ANSI palette and change just the
+roles you want:
+
+```sh
+cp ~/.config/desktop-themes/themes/catppuccin-mocha.json \
+   ~/.config/desktop-themes/themes/my-mocha.json
+nvim ~/.config/desktop-themes/themes/my-mocha.json
+```
+
+For a blue accent and another wallpaper, edit these existing fields:
+
+```json
+"accent": "89b4fa",
+"wallpaper": "~/Wallpaper/my-picture.png"
+```
+
+This snippet is a fragment of the copied theme, not a complete file. Keep all
+other fields. Use `"wallpaper": null` to leave the current wallpaper unchanged.
+Then run `desktop-theme --check my-mocha` followed by `desktop-theme my-mocha`.
+The filename automatically appears in the Super + grave menu. No plugin,
+Lua module, extra script or keybinding needs to be written for another palette.
+
+## Browser and application presets
+
+See [app-themes.md](app-themes.md) for the bundled signed browser packages,
+native handler setup, the three Vesktop CSS files and the optional GTK/Qt
+installer. `apps` is the optional object of application preset names/IDs,
+separate from the common RGB palette.

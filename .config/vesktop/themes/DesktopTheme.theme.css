@@ -1,0 +1,7 @@
+/**
+ * @name Desktop Theme
+ * @version 1.0
+ * @description Managed by desktop-theme. Enable this file only; the script selects the preset.
+ */
+/* First-install default. desktop-theme replaces this file with the selected preset. */
+@import url("vencord:///themes/GruvboxSharp.theme.css");

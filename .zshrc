@@ -13,7 +13,7 @@ alias lt='eza --tree'
 alias lta='eza -la --tree'
 alias сдуфк='clear'
 alias vim='nvim'
-alias snapshot="doas btrfs subvolume snapshot -r / /.snapshots/root-$(date +%d%m%Y)"
+alias snapshot='doas btrfs subvolume snapshot -r / /.snapshots/root-$(date +%d%m%Y)'
 
 doas() {
     if [[ $1 == nvim ]]; then

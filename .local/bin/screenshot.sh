@@ -1,6 +1,14 @@
 #!/usr/bin/env sh
 
-export PATH="~/.cargo/bin:~/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
+case "${1:-}" in
+    full|area|monitor|area-swappy) ;;
+    *)
+        printf 'Usage: %s {full|area|monitor|area-swappy}\n' "$0" >&2
+        exit 2
+        ;;
+esac
 
 case "$1" in
     full)

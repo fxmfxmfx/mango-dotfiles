@@ -31,6 +31,7 @@ class ThemeTests(unittest.TestCase):
         for theme in (self.config / 'desktop-themes/themes').glob('*.json'):
             data = json.loads(theme.read_text())
             data['wallpaper'] = None
+            data.pop('apps', None)
             theme.write_text(json.dumps(data))
         loader = importlib.machinery.SourceFileLoader('desktop_theme', str(REPO / '.local/bin/desktop-theme'))
         with patch.dict(os.environ, {'XDG_CONFIG_HOME': str(self.config)}):
@@ -49,8 +50,8 @@ class ThemeTests(unittest.TestCase):
              contextlib.redirect_stdout(io.StringIO()):
             self.module.main()
 
-    def test_both_palettes_generate_complete_active_state(self):
-        for name, expected in [('cflowers', '0c0c0c'), ('gruvbox', '282828')]:
+    def test_bundled_palettes_generate_complete_active_state(self):
+        for name, expected in [('cflowers', '0c0c0c'), ('gruvbox', '282828'), ('catppuccin-mocha', '1e1e2e')]:
             with self.subTest(name=name):
                 files = self.module.render(self.module.palette(name))
                 active = json.loads(files[self.module.ROOT / 'active.json'])

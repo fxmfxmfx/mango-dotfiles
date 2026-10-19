@@ -4,6 +4,27 @@ Personal [MangoWM](https://github.com/mangowm/mango) dotfiles for Gentoo GNU/Lin
 
 ![MangoWM desktop](screenshots/screenshot.png)
 
+<details>
+<summary>More screenshots</summary>
+
+### Catppuccin Mocha in Neovim
+
+![Neovim using the Catppuccin Mocha desktop theme](screenshots/catppuccin-nvim.png)
+
+### Gruvbox theme menu
+
+![Rofi theme menu with the Gruvbox palette](screenshots/rofi-gruvbox.png)
+
+### Theme change notification
+
+![Dunst notification after selecting Gruvbox](screenshots/theme-notification.png)
+
+### Desktop widgets
+
+![rs-wwidget clock and system information](screenshots/desktop-widgets.png)
+
+</details>
+
 ## Quick Install
 
 ```sh
@@ -18,9 +39,26 @@ cd mango-dotfiles
 
 This repo mirrors `$HOME` for dot directories such as `.config` and `.local`.
 The installer backs up overwritten files by default. It installs the bundled
-fonts (MxPlus IBM VGA and Nerd Fonts) and copies the theme configuration
-(Gruvbox GTK theme, Kvantum/Qt6ct for Qt apps, and the default Adwaita icon
-scheme) as regular dotfiles. The dry run shows what would be copied.
+MxPlus IBM VGA font, downloads Nerd Fonts and copies GTK settings,
+the bundled Gruvbox Kvantum preset, Qt6ct settings and Adwaita icon selection
+as regular dotfiles. The GTK theme itself is a separate prerequisite; see
+[application themes](docs/app-themes.md). The dry run shows what would be copied.
+
+For an offline config update when fonts are already installed, use
+`./scripts/install.sh --skip-fonts`. Each run uses its own backup directory.
+If you set `DOTFILES_BACKUP_DIR`, choose a fresh directory: existing backup
+files are never overwritten, and a collision stops the installer.
+
+In a terminal, installation asks whether to enable **Alt+Shift** keyboard layout
+switching, then asks for the second layout code (default `ru`, with `us` first).
+Enter another code such as `de` or `ua`, or `?` to list available layouts.
+Codes are checked against installed XKB data; invalid choices are requested
+again. Declining switching installs only `us`.
+
+For installation without prompts, pass `--keyboard-layouts us,ru` or
+`--keyboard-layouts us`. Without a terminal or during a dry run, no questions
+are asked; without this option, the repository's keyboard defaults are copied.
+The installer prints the input config path so you can customize it later.
 
 Run Mango from a TTY with:
 
@@ -47,8 +85,10 @@ Wayland tooling and a POSIX-compatible shell.
 ## Global Themes
 
 One JSON file controls MangoWM, rofi, foot, Neovim, dunst, rs-yambar and
-rs-wwidget. Each theme can assign a default image wallpaper. Open terminals
-and editors update without restarting. GTK/Qt keep their own theme.
+rs-wwidget. Each theme can assign a default image wallpaper. Gruvbox uses
+`~/Wallpaper/prism.png`; cflowers and Catppuccin Mocha keep their own images. Open terminals
+and editors update without restarting. Optional app mappings also synchronize
+LibreWolf and Vesktop. GTK/Qt preset installation and synchronization are opt-in.
 
 ```sh
 desktop-theme --check gruvbox
@@ -58,6 +98,18 @@ desktop-theme gruvbox
 See [docs/themes.md](docs/themes.md) for installation, the complete palette
 format, custom themes, wallpaper paths, component overrides and troubleshooting.
 The previous URL/video wallpaper and wallpaper-derived color helpers are retired.
+
+## Browser and app themes
+
+The bundle includes three signed browser XPIs (two themes and the switcher),
+its local handler, and three Vesktop CSS files (two presets and Desktop Theme).
+After installing the dotfiles, run `desktop-theme-browser-setup` and install the
+three printed XPI files once through `about:addons`. In Vesktop, enable only
+Desktop Theme once. These setup steps persist across restarts.
+
+The optional `./scripts/install-app-themes.sh` downloads the ready-made
+Catppuccin GTK/Qt presets; the normal installer does not run it. See
+[docs/app-themes.md](docs/app-themes.md) for setup, assignments and GTK/Qt details.
 
 ## Compatibility Notes
 
@@ -127,6 +179,7 @@ These are mostly command-line tools used by helper scripts. Prefer
 `./scripts/check-deps.sh` over manually reading this section.
 
 - `bash`
+- `curl` and `tar` (normal font installation)
 - GNU `coreutils`
 - `findutils`
 - `gawk` or compatible `awk`
@@ -180,13 +233,25 @@ MxPlus IBM VGA 8x16 MidTilde font is included in `fonts/` directory.
 
 For a more readable package list, see `docs/packages.md`.
 
+## Repository checks
+
+```sh
+python3 scripts/check-repo.py
+```
+
+This checks JSON/TOML data and script syntax, then runs the regression tests,
+including installation and backups in a temporary home. It does not download
+anything or change your desktop. Python 3 and Git are needed; TOML validation
+uses Python 3.11+. Shell and JavaScript syntax checks use installed `sh`,
+`bash`, `zsh` and `node`; unavailable validators are reported as skipped.
+
 ## Key Binds
 
 - `Super+Return` - terminal
 - `Super+Esc` - launcher
 - `Super+W` - browser
 - `Super+V` - clipboard history
-- **Super + grave (backtick)** - theme menu (`cflowers`, `gruvbox` and custom JSON themes)
+- **Super + grave (backtick)** - theme menu (`cflowers`, `gruvbox`, `catppuccin-mocha` and custom JSON themes)
 - `Super+X` - local image wallpaper picker; colors stay unchanged
 - `Super+/` - emoji picker
 - `Print` - monitor screenshot to clipboard

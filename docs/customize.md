@@ -5,6 +5,39 @@ these files before using them on another machine.
 
 Refer to MangoWM docs: [mangowm.github.io/docs](https://mangowm.github.io/docs).
 
+## Keyboard layouts
+
+Interactive installation first asks whether to enable keyboard switching with
+**Alt+Shift**. If enabled, the first layout is `us` and the second defaults to
+`ru`. Enter another XKB layout code, such as `de` or `ua`, or enter `?` to see
+installed codes and descriptions. Unknown codes are rejected and requested
+again. Declining switching writes only `us` and clears the switching shortcut.
+
+For scripts or an explicit choice without prompts:
+
+```sh
+./scripts/install.sh --keyboard-layouts us,ru
+./scripts/install.sh --keyboard-layouts us,de
+./scripts/install.sh --keyboard-layouts us
+```
+
+Explicit layout lists are validated too. The validator reads the layout section
+of installed XKB `rules/evdev.lst` (or `base.lst`); install `xkeyboard-config`
+if the data is missing. For a nonstandard location, set `XKB_CONFIG_ROOT` to
+the directory containing `rules/`. Validation and cancelled prompts happen
+before installation changes files. Dry runs do not prompt. Noninteractive
+installation without `--keyboard-layouts` copies repository keyboard defaults.
+
+After installation, edit `~/.config/mango/conf.d/10-input.conf`:
+
+```ini
+xkb_rules_layout=us,ru
+xkb_rules_options=grp:lalt_lshift_toggle
+```
+
+Change the layout codes and the XKB group shortcut for your needs. The
+installer prints this config path, including the target of `--home`.
+
 ## Monitors
 
 Edit `.config/mango/conf.d/00-monitors.conf`.
@@ -71,6 +104,8 @@ The confusing part is path layout:
 
 The helper checks those usual locations and starts the main portal, GTK backend
 and wlr backend when it can find them.
+It attempts every backend even if one is missing, and returns a failure status
+if any could not be found.
 
 `.config/xdg-desktop-portal/mango-portals.conf` keeps GTK as the default portal
 backend and uses the wlr backend for screenshot and screencast portals.
@@ -105,3 +140,27 @@ See [themes.md](themes.md) for the full schema, component overrides, Neovim
 integration, terminal launch helper, generated state and troubleshooting.
 The script writes color fields in the app configurations listed above; make
 persistent color edits in the JSON palette rather than generated color fields.
+
+## Optional application presets
+
+See [app-themes.md](app-themes.md) for signed browser package installation,
+Vesktop Desktop Theme setup and optional GTK/Qt asset installation. These
+settings live in the palette's optional `apps` object.
+
+## Updating and checking the repository
+
+Use `./scripts/install.sh --skip-fonts` to update configs offline while keeping
+your installed fonts. Normal installation still copies/downloads fonts.
+Overwritten files go into a separate backup directory per run. When setting
+`DOTFILES_BACKUP_DIR` yourself, use a fresh directory; the installer refuses
+to overwrite existing backup files. Retired helpers are always backed up,
+including with `--no-backup`.
+
+Run `python3 scripts/check-repo.py` after editing scripts or configuration.
+It validates data and script syntax and runs tests, including installation in
+a temporary home, without needing a graphical session or network access.
+
+The session launcher defaults to the same `Bibata-Modern-Ice`, size 24 cursor
+as the GTK/Mango settings. Set `XCURSOR_THEME` and `XCURSOR_SIZE` before launching
+Mango to override the session defaults; update the GTK/Mango configs as well
+if you want those settings to agree.

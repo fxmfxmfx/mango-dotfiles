@@ -15,6 +15,8 @@ import tempfile
 
 CONFIG = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
 ROOT = CONFIG / 'desktop-themes'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'lib'))
+import desktop_theme_apps
 
 
 def run(args, **kwargs):
@@ -30,6 +32,9 @@ def palette(name):
         if key not in p:
             raise ValueError(f'Missing color: {key}')
     for key, value in p.items():
+        if key == 'apps':
+            desktop_theme_apps.validate(value)
+            continue
         if key == 'wallpaper':
             wallpaper_path(value)  # Validate before writing any configuration.
             continue
@@ -159,6 +164,7 @@ def render(p):
         **{k: v for k, v in p.items() if k != '_name'},
         'name': p['_name'], 'terminal': terminal_colors(p),
     }, indent=2) + '\n'
+    result.update(desktop_theme_apps.render(p.get('apps', {}), CONFIG))
     return result
 
 
@@ -285,6 +291,8 @@ def refresh(p, restore=False):
                         client.sendall(message)
                 except OSError as error:
                     print(f'Neovim update ({endpoint}): {error}', file=sys.stderr)
+    for warning in desktop_theme_apps.refresh(p.get('apps', {}), run, CONFIG):
+        print(warning, file=sys.stderr)
     for error in errors:
         print(error, file=sys.stderr)
     print(f'Updated {count} open foot terminals')
@@ -319,17 +327,22 @@ def main():
         files = render(p)
         validate(files)
         if args.check:
-            print(f'{name}: valid ({len(files)} components)'); return
-        old = {path: path.read_text() if path.exists() else None for path in files}
+            print(f'{name}: valid ({len(files)} configuration files)'); return
+        old = {path: ('symlink', os.readlink(path)) if path.is_symlink() else
+               ('file', path.read_text()) if path.exists() else ('missing', None)
+               for path in files}
         try:
             for path, text in files.items():
                 atomic_write(path, text)
         except OSError:
-            for path, text in old.items():
-                if text is None:
+            for path, (kind, content) in old.items():
+                if kind == 'missing':
                     path.unlink(missing_ok=True)
+                elif kind == 'symlink':
+                    path.unlink(missing_ok=True)
+                    path.symlink_to(content)
                 else:
-                    atomic_write(path, text)
+                    atomic_write(path, content)
             raise
         atomic_write(ROOT / 'current', name + '\n')
         ok = refresh(p, args.restore)

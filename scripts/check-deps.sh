@@ -49,6 +49,8 @@ pkill
 killall
 mktemp
 xdg-open
+curl
+tar
 "
 
 optional_commands="
@@ -65,7 +67,11 @@ gcc
 magick
 ffmpeg
 xsettingsd
+gsettings
+kvantummanager
+qt6ct
 unzip
+sha256sum
 fc-cache
 "
 
@@ -140,8 +146,6 @@ else
     printf 'missing required python3\n'
     missing=1
 fi
-
-check_command curl "optional" 0
 
 check_portal xdg-desktop-portal /usr/libexec/xdg-desktop-portal /usr/lib/xdg-desktop-portal
 check_portal xdg-desktop-portal-gtk /usr/libexec/xdg-desktop-portal-gtk /usr/lib/xdg-desktop-portal-gtk
