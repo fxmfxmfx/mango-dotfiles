@@ -81,6 +81,3 @@ delsnap() {
     fi
     doas btrfs subvolume delete /.snapshots/root-"$1"
 }
-
-alias skeet-cfg='cd ~/.steam/steam/steamapps/compatdata/730/pfx/drive_c/users/steamuser/AppData/Local/skeet'
-alias skeet-pfx='cd ~/.steam/steam/steamapps/compatdata/730/pfx/drive_c'
