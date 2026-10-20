@@ -74,9 +74,12 @@ rest of the desktop dependencies.
 The installer moves retired helpers and data into its backup directory even
 with `--no-backup`; they are no longer present in the active configuration.
 
-The main script currently expects all six desktop component configs to exist.
-It does not silently skip a missing component. `--check` runs the component
-validators too, so it needs their binaries even though it does not reload them.
+The main script currently expects all six component configs it edits to exist:
+rofi, foot, MangoWM, rs-yambar, rs-wwidget and dunst. Neovim reads the
+generated `active.json` through its separate Lua integration. It does not
+silently skip a missing component. `--check` also runs the available validators
+for foot, rofi, rs-yambar and rs-wwidget; it needs those binaries but does not
+reload the running desktop.
 
 ## Files and environment
 
@@ -354,8 +357,9 @@ MangoWM config reload. It still performs validation and component refresh.
 Application changes only recognized color fields in existing config layouts.
 It preserves fonts, geometry, keybindings, bar modules and unrelated options.
 If you rename/delete required fields or restructure the layouts, update the
-renderer too. Optional `apps` assignments select installed browser/Vesktop
-presets and, when configured, GTK/Qt presets. See [app-themes.md](app-themes.md).
+renderer too. Bundled `apps` assignments select browser, Vesktop, GTK and Qt
+presets. Optional GTK/Qt assets are applied when installed and otherwise
+skipped with a warning. See [app-themes.md](app-themes.md).
 
 Configuration writes are atomic per file, not one transaction covering the
 entire desktop. Write errors trigger an attempt to restore prior file contents.
@@ -438,7 +442,7 @@ reloads, wallpaper decoding or the visual result.
 | Validation works but reload fails | Run from the MangoWM session with its Wayland, runtime and IPC environment |
 | Notifications or widget use wrong output/font | Edit the component configuration; palettes do not change geometry or fonts |
 
-The installer backs up overwritten files under `~/.dotfiles-backup/` by default.
+The installer backs up overwritten dotfiles under `~/.dotfiles-backup/` by default.
 For recovery, use an installer backup or restore your version-controlled
 palette/configs, then apply a known working theme. Do not delete the theme
 source directory as a way to reset generated state.

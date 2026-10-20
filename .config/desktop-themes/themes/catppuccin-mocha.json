@@ -37,6 +37,8 @@
   },
   "wallpaper": "~/Wallpaper/gentoo.png",
   "apps": {
+    "gtk": "catppuccin-mocha-mauve-standard+default",
+    "kvantum": "catppuccin-mocha-mauve",
     "vesktop": "CatppuccinMochaSharp.theme.css",
     "librewolf": "{f5525f34-4102-4f6e-8478-3cf23cfeff7a}"
   }

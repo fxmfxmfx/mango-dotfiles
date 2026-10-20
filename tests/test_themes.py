@@ -59,6 +59,17 @@ class ThemeTests(unittest.TestCase):
                 self.assertEqual(active['terminal']['background'], expected)
                 self.assertEqual(len(files), 7)
 
+    def test_bundled_gtk_qt_assignments_match_global_palettes(self):
+        expected = {
+            'cflowers': ('Gruvbox-Dark-Soft', 'gruvbox-kvantum'),
+            'gruvbox': ('Gruvbox-Dark-Soft', 'gruvbox-kvantum'),
+            'catppuccin-mocha': ('catppuccin-mocha-mauve-standard+default', 'catppuccin-mocha-mauve'),
+        }
+        for name, presets in expected.items():
+            with self.subTest(name=name):
+                palette = json.loads((REPO / '.config/desktop-themes/themes' / f'{name}.json').read_text())
+                self.assertEqual((palette['apps']['gtk'], palette['apps']['kvantum']), presets)
+
     def test_check_does_not_write_configs_or_refresh(self):
         before = self.snapshot()
         with patch.object(self.module, 'validate'), \

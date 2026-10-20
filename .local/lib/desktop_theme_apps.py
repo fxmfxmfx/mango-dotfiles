@@ -64,34 +64,44 @@ def render(apps, config):
     validate(apps)
     result = {}
     if apps.get('gtk'):
-        theme = gtk_path(apps['gtk'])
-        values = {'gtk-theme-name': apps['gtk'], 'gtk-application-prefer-dark-theme': '1'}
-        for version in ['gtk-3.0', 'gtk-4.0']:
-            path = config / version / 'settings.ini'
-            result[path] = ini_update(path, 'Settings', values)
-        # GTK 4 needs an explicit user stylesheet for non-Adwaita presets.
-        for name in ['gtk.css', 'gtk-dark.css']:
-            target = theme / 'gtk-4.0' / name
-            if not target.is_file():
-                target = theme / 'gtk-4.0/gtk.css'
-            if not target.is_file():
-                raise ValueError(f'GTK preset lacks GTK 4 CSS: {theme}')
-            path = config / 'gtk-4.0' / name
-            marker_start = '/* desktop-theme preset begin */'
-            marker_end = '/* desktop-theme preset end */'
-            # Existing named-theme symlinks are replaced; regular custom CSS is kept.
-            custom = '' if path.is_symlink() or not path.exists() else path.read_text()
-            custom = re.sub(re.escape(marker_start) + r'.*?' + re.escape(marker_end) + r'\n?', '', custom, flags=re.S)
-            result[path] = f'{marker_start}\n@import url({json.dumps(target.resolve().as_uri())});\n{marker_end}\n' + custom
+        try:
+            theme = gtk_path(apps['gtk'])
+        except ValueError:
+            # GTK is an optional integration; missing assets must not block the
+            # compositor, terminal and other bundled parts of a theme switch.
+            pass
+        else:
+            values = {'gtk-theme-name': apps['gtk'], 'gtk-application-prefer-dark-theme': '1'}
+            for version in ['gtk-3.0', 'gtk-4.0']:
+                path = config / version / 'settings.ini'
+                result[path] = ini_update(path, 'Settings', values)
+            # GTK 4 needs an explicit user stylesheet for non-Adwaita presets.
+            for name in ['gtk.css', 'gtk-dark.css']:
+                target = theme / 'gtk-4.0' / name
+                if not target.is_file():
+                    target = theme / 'gtk-4.0/gtk.css'
+                if not target.is_file():
+                    raise ValueError(f'GTK preset lacks GTK 4 CSS: {theme}')
+                path = config / 'gtk-4.0' / name
+                marker_start = '/* desktop-theme preset begin */'
+                marker_end = '/* desktop-theme preset end */'
+                # Existing named-theme symlinks are replaced; regular custom CSS is kept.
+                custom = '' if path.is_symlink() or not path.exists() else path.read_text()
+                custom = re.sub(re.escape(marker_start) + r'.*?' + re.escape(marker_end) + r'\n?', '', custom, flags=re.S)
+                result[path] = f'{marker_start}\n@import url({json.dumps(target.resolve().as_uri())});\n{marker_end}\n' + custom
     if apps.get('kvantum'):
-        kvantum_path(apps['kvantum'], config)
-        path = config / 'Kvantum/kvantum.kvconfig'
-        result[path] = ini_update(path, 'General', {'theme': apps['kvantum']})
-        # Both versions can coexist; don't replace unrelated Qt settings.
-        for version in ['qt5ct', 'qt6ct']:
-            path = config / version / f'{version}.conf'
-            if path.exists() or version == 'qt6ct':
-                result[path] = ini_update(path, 'Appearance', {'style': 'kvantum'})
+        try:
+            kvantum_path(apps['kvantum'], config)
+        except ValueError:
+            pass
+        else:
+            path = config / 'Kvantum/kvantum.kvconfig'
+            result[path] = ini_update(path, 'General', {'theme': apps['kvantum']})
+            # Both versions can coexist; don't replace unrelated Qt settings.
+            for version in ['qt5ct', 'qt6ct']:
+                path = config / version / f'{version}.conf'
+                if path.exists() or version == 'qt6ct':
+                    result[path] = ini_update(path, 'Appearance', {'style': 'kvantum'})
     if apps.get('vesktop'):
         directory = config / 'vesktop'
         preset = directory / 'themes' / apps['vesktop']
@@ -110,13 +120,23 @@ def refresh(apps, run, config):
     warnings = []
     if apps.get('gtk'):
         import shutil
-        if shutil.which('gsettings'):
-            for key, value in [('gtk-theme', apps['gtk']), ('color-scheme', 'prefer-dark')]:
-                result = run(['gsettings', 'set', 'org.gnome.desktop.interface', key, value], capture_output=True)
-                if result.returncode:
-                    warnings.append(f'GTK live update: {(result.stderr or result.stdout).strip()}')
+        try:
+            gtk_path(apps['gtk'])
+        except ValueError:
+            warnings.append(f"GTK preset not installed: {apps['gtk']}; skipping GTK theme update")
         else:
-            warnings.append('GTK preset saved; gsettings not installed, applications may need reopening')
+            if shutil.which('gsettings'):
+                for key, value in [('gtk-theme', apps['gtk']), ('color-scheme', 'prefer-dark')]:
+                    result = run(['gsettings', 'set', 'org.gnome.desktop.interface', key, value], capture_output=True)
+                    if result.returncode:
+                        warnings.append(f'GTK live update: {(result.stderr or result.stdout).strip()}')
+            else:
+                warnings.append('GTK preset saved; gsettings not installed, applications may need reopening')
+    if apps.get('kvantum'):
+        try:
+            kvantum_path(apps['kvantum'], config)
+        except ValueError:
+            warnings.append(f"Kvantum preset not installed: {apps['kvantum']}; skipping Qt theme update")
     if apps.get('vesktop'):
         settings = config / 'vesktop/settings/settings.json'
         try:

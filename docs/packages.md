@@ -47,8 +47,9 @@ repository and overlay, so treat this as the software surface the setup expects.
 - `imv`
 - `thunar`
 - `librewolf`
-- `vesktop` (for optional theme synchronization)
+- `vesktop` or `vesktop-bin` (for optional theme synchronization)
 - `pavucontrol`
+- `wlr-randr` (lists connected monitor outputs during interactive installation)
 
 ## Shell And Editor
 

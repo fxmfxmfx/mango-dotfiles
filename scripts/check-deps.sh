@@ -58,10 +58,10 @@ mpv
 imv
 thunar
 librewolf
-vesktop
 pavucontrol
 doas
 neo
+wlr-randr
 make
 gcc
 magick
@@ -90,6 +90,20 @@ check_command() {
             missing=1
         fi
     fi
+}
+
+check_optional_any() {
+    label=$1
+    shift
+
+    for name do
+        if command -v "$name" >/dev/null 2>&1; then
+            printf 'ok      optional %s (%s)\n' "$label" "$name"
+            return 0
+        fi
+    done
+
+    printf 'missing optional %s (%s)\n' "$label" "$*"
 }
 
 check_portal() {
@@ -133,6 +147,8 @@ done
 for command_name in $optional_commands; do
     check_command "$command_name" "optional" 0
 done
+
+check_optional_any Vesktop vesktop vesktop-bin
 
 if command -v python3 >/dev/null 2>&1; then
     printf 'ok      required python3\n'

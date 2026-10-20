@@ -128,10 +128,11 @@ restart the app or touch its account/session data.
 
 The normal `install.sh` copies GTK settings, qt6ct settings and the bundled
 Gruvbox Kvantum preset. It does not download GTK/Qt theme assets.
-These are static defaults: GTK 3 names `Gruvbox-Dark-Soft`, Qt selects the
-bundled Gruvbox Kvantum preset, and GTK 4 has no explicit theme name in its
-settings file. Switching global palettes changes GTK/Qt only after you enable
-the assignments described below.
+These are defaults for `cflowers` and `gruvbox`: GTK selects
+`Gruvbox-Dark-Soft`, and Qt selects the bundled `gruvbox-kvantum` preset. The
+`catppuccin-mocha` palette selects Catppuccin Mocha/Mauve for GTK and Kvantum.
+GTK 4 has no explicit theme name in its static settings file; the theme helper
+sets it when applying a palette.
 
 To install the official Catppuccin Mocha/Mauve GTK and Kvantum presets:
 
@@ -151,26 +152,39 @@ Targets are:
 - `$XDG_CONFIG_HOME/Kvantum/catppuccin-mocha-mauve`
   (default `~/.config/Kvantum/...`).
 
-The existing Gruvbox-Dark-Soft GTK theme is a separate prerequisite if you want
-that appearance; it is not downloaded by this Catppuccin installer. Install it
-in `~/.themes`, `$XDG_DATA_HOME/themes` or a system theme directory. The Kvantum
-Gruvbox preset is already bundled. System theme names must match exactly.
+The existing Gruvbox-Dark-Soft GTK theme is a separate prerequisite; it is not
+downloaded by this Catppuccin installer. Install it in `~/.themes`,
+`$XDG_DATA_HOME/themes` or a system theme directory. The Kvantum Gruvbox preset
+is already bundled. System theme names must match exactly.
 
-Repository palettes declare LibreWolf and Vesktop assignments by default; they
-only take effect after you complete the optional app-specific setup above. The
-apps are not required for core desktop theme switching. GTK/Qt synchronization
-is also optional: add the following keys inside a palette's `apps` object after
-installing the relevant assets:
+Repository palettes declare LibreWolf, Vesktop, GTK and Qt assignments by
+default. LibreWolf and Vesktop assignments take effect after their optional
+setup above. GTK/Qt assignments take effect when the selected presets are
+installed. Missing GTK or Kvantum presets are skipped with a warning; the rest
+of the global theme still applies. Install the optional Catppuccin assets with
+the script above and provide the separate Gruvbox GTK prerequisite to enable
+all three themes' GTK/Qt synchronization. None of these apps or presets is
+required for core desktop theme switching.
+
+The mappings are:
+
+| Global theme | GTK preset | Kvantum preset |
+| --- | --- | --- |
+| `cflowers` | `Gruvbox-Dark-Soft` | `gruvbox-kvantum` |
+| `gruvbox` | `Gruvbox-Dark-Soft` | `gruvbox-kvantum` |
+| `catppuccin-mocha` | `catppuccin-mocha-mauve-standard+default` | `catppuccin-mocha-mauve` |
+
+To customize a mapping, change its `apps.gtk` or `apps.kvantum` value in the
+palette JSON. Set a key to `null` to leave that system selection alone. The
+following fragment shows the Catppuccin assignments:
 
 ```json
 "gtk": "catppuccin-mocha-mauve-standard+default",
 "kvantum": "catppuccin-mocha-mauve"
 ```
 
-For existing Gruvbox assets, use `"gtk": "Gruvbox-Dark-Soft"` and
-`"kvantum": "gruvbox-kvantum"`. Omit/null either key to keep its current system
-selection. These supplied presets are dark; the GTK integration requests dark
-appearance as well as setting the named theme.
+These supplied presets are dark; the GTK integration requests dark appearance
+as well as setting the named theme.
 
 GTK settings retain unrelated fonts/options. GTK 4 user CSS gets a managed
 import of the preset, preserving existing regular custom CSS after that block;

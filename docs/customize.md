@@ -48,7 +48,7 @@ For unattended installs, pass `--monitor-output NAME` to `install.sh`.
 This only changes the primary connector name. Edit
 `.config/mango/conf.d/00-monitors.conf` to change resolution, refresh rate,
 position or additional monitor rules.
-To set this nice, check Mango`s monitor docs:
+For details, see Mango's monitor docs:
 [mangowm.github.io/docs/configuration/monitors](https://mangowm.github.io/docs/configuration/monitors).
 
 The current setup expects:
@@ -158,7 +158,8 @@ settings live in the palette's optional `apps` object.
 
 Use `./scripts/install.sh --skip-fonts` to update configs offline while keeping
 your installed fonts. Normal installation still copies/downloads fonts.
-Overwritten files go into a separate backup directory per run. When setting
+Overwritten dotfiles go into a separate backup directory per run. Font files
+are copied separately to `~/.local/share/fonts`. When setting
 `DOTFILES_BACKUP_DIR` yourself, use a fresh directory; the installer refuses
 to overwrite existing backup files. Retired helpers are always backed up,
 including with `--no-backup`.

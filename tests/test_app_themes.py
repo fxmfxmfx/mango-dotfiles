@@ -41,6 +41,14 @@ class AppThemeTests(unittest.TestCase):
         self.assertEqual(apps.render({}, self.config), {})
         self.assertEqual(apps.render({'gtk': None}, self.config), {})
 
+    def test_missing_optional_gtk_and_kvantum_presets_are_skipped(self):
+        assignment = {'gtk': 'Missing GTK', 'kvantum': 'Missing Kvantum'}
+        self.assertEqual(apps.render(assignment, self.config), {})
+        warnings = apps.refresh(assignment, lambda *args, **kwargs: None, self.config)
+        self.assertEqual(len(warnings), 2)
+        self.assertTrue(any('GTK preset not installed' in item for item in warnings))
+        self.assertTrue(any('Kvantum preset not installed' in item for item in warnings))
+
     def test_invalid_mapping_and_paths_are_rejected(self):
         for bad in ['gtk-theme', {'unknown': 'theme'}, {'gtk': '../theme'}, {'vesktop': apps.VESKTOP_BRIDGE}]:
             with self.subTest(value=bad), self.assertRaises(ValueError):

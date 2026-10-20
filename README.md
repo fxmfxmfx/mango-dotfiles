@@ -42,8 +42,9 @@ cd mango-dotfiles
 ```
 
 This repo mirrors `$HOME` for dot directories such as `.config` and `.local`.
-The installer backs up overwritten files by default. It installs the bundled
-MxPlus IBM VGA font, downloads Nerd Fonts and copies GTK settings,
+The installer backs up overwritten dotfiles by default. Font files are copied
+to `~/.local/share/fonts` separately. It installs the bundled MxPlus IBM VGA
+font, downloads Nerd Fonts and copies GTK settings,
 the bundled Gruvbox Kvantum preset, Qt6ct settings and Adwaita icon selection
 as regular dotfiles. The GTK theme itself is a separate prerequisite; see
 [application themes](docs/app-themes.md). The dry run shows what would be copied.
@@ -97,12 +98,13 @@ Wayland tooling and a POSIX-compatible shell.
 
 ## Global Themes
 
-One JSON file controls MangoWM, rofi, foot, Neovim, dunst, rs-yambar and
-rs-wwidget. Each theme can assign a default image wallpaper: cflowers uses
+One JSON file controls MangoWM, rofi, foot, Neovim, dunst, rs-yambar,
+rs-wwidget and the GTK/Qt, LibreWolf and Vesktop presets. Each theme can assign
+a default image wallpaper: cflowers uses
 `~/Wallpaper/cupsizeflowers.jpg`, Gruvbox uses `~/Wallpaper/prism.png`, and
 Catppuccin Mocha uses `~/Wallpaper/gentoo.png`. Open terminals
-and editors update without restarting. Optional app mappings also synchronize
-LibreWolf and Vesktop. GTK/Qt preset installation and synchronization are opt-in.
+and editors update without restarting. GTK/Qt presets apply when installed;
+LibreWolf and Vesktop synchronization needs the optional one-time setup.
 
 ```sh
 desktop-theme --check gruvbox
@@ -126,7 +128,10 @@ Theme once in Vesktop. These app-specific steps are optional and persist across
 restarts.
 
 The optional `./scripts/install-app-themes.sh` downloads the ready-made
-Catppuccin GTK/Qt presets; the normal installer does not run it. See
+Catppuccin GTK/Qt presets; the normal installer does not run it. The palettes
+map `cflowers` and `gruvbox` to Gruvbox GTK/Qt, and `catppuccin-mocha` to
+Catppuccin GTK/Qt. Missing presets are skipped with a warning, so the rest of
+the desktop theme still applies. See
 [docs/app-themes.md](docs/app-themes.md) for setup, assignments and GTK/Qt details.
 
 ## Compatibility Notes
@@ -230,12 +235,13 @@ Optional apps:
 - `imv`
 - `thunar`
 - `librewolf`
-- `vesktop` (for optional Vesktop theme synchronization)
+- `vesktop` or `vesktop-bin` (for optional Vesktop theme synchronization)
 - `pavucontrol`
 
 Other commands reported as optional by `check-deps.sh`:
 
 - `doas`
+- `wlr-randr` (lists connected monitor outputs during interactive installation)
 - [`neo`](https://github.com/st3w/neo)
 - `make` and `gcc` (for compiling Treesitter parsers)
 - `magick` (ImageMagick) and `ffmpeg`
