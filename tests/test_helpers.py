@@ -121,6 +121,8 @@ class HelperTests(unittest.TestCase):
                          'retired helper\n')
         self.assertTrue((self.home / '.config/vesktop/themes/DesktopTheme.theme.css').is_file())
         self.assertTrue((self.home / 'Wallpaper/prism.png').is_file())
+        autostart = (self.home / '.config/mango/conf.d/20-autostart.conf').read_text()
+        self.assertIn('exec-once=~/.local/bin/rs-wwidget start', autostart)
         self.assertFalse((self.home / '.local/share/fonts').exists())
         self.assertEqual((self.home / '.config/mango/conf.d/10-input.conf').read_text(),
                          (REPO / '.config/mango/conf.d/10-input.conf').read_text())
