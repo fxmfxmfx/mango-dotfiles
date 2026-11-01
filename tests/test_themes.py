@@ -89,6 +89,22 @@ class ThemeTests(unittest.TestCase):
         self.assertIn('background = "#282828ff"', bar)
         self.assertIn('background=282828', (self.config / 'foot/foot.ini').read_text())
 
+    def test_mango_color_aliases_preserve_installed_config_keys(self):
+        path = self.config / 'mango/conf.d/50-appearance.conf'
+        text = path.read_text()
+        for old, new in [('root_color', 'rootcolor'), ('border_color', 'bordercolor'),
+                         ('focus_color', 'focuscolor'),
+                         ('maximized_screen_color', 'maximizescreencolor'),
+                         ('scratchpad_color', 'scratchpadcolor')]:
+            text = text.replace(old + '=', new + '=')
+        path.write_text(text)
+
+        rendered = self.module.render(self.module.palette('gruvbox'))[path]
+        for key in ['rootcolor', 'bordercolor', 'focuscolor',
+                    'maximizescreencolor', 'scratchpadcolor']:
+            self.assertRegex(rendered, rf'(?m)^{key}=0x[0-9a-f]{{8}}$')
+        self.assertIn('rootcolor=0x282828ff', rendered)
+
     def test_invalid_wallpaper_stops_before_writing(self):
         path = self.module.ROOT / 'themes/gruvbox.json'
         data = json.loads(path.read_text()); data['wallpaper'] = 'https://example.invalid/image.png'

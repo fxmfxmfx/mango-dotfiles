@@ -110,10 +110,20 @@ def render(p):
     colors = dict(rootcolor=p['bg'], bordercolor=p['border'], focuscolor=p['accent'],
                   maximizescreencolor=p['accent'], scratchpadcolor=p['accent'])
     colors.update(p.get('mango', {}))
+    aliases = {
+        'rootcolor': ('rootcolor', 'root_color'),
+        'bordercolor': ('bordercolor', 'border_color'),
+        'focuscolor': ('focuscolor', 'focus_color'),
+        'maximizescreencolor': ('maximizescreencolor', 'maximized_screen_color'),
+        'scratchpadcolor': ('scratchpadcolor', 'scratchpad_color'),
+    }
     for key, value in colors.items():
-        text, n = re.subn(rf'(?m)^{key}=0x[\da-fA-F]{{8}}$', f'{key}=0x{value}ff', text)
+        candidates = aliases.get(key, (key,))
+        matches = re.compile(rf'(?m)^(' + '|'.join(map(re.escape, candidates)) +
+                             r')=0x[\da-fA-F]{8}$')
+        text, n = matches.subn(lambda match: f'{match[1]}=0x{value}ff', text)
         if n != 1:
-            raise ValueError(f'Missing Mango color {key}')
+            raise ValueError(f'Expected one Mango color {key} (accepted: {", ".join(candidates)})')
     result[path] = text
 
     path = CONFIG / 'rs-yambar/config.toml'

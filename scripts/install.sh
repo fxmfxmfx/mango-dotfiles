@@ -289,6 +289,10 @@ copy_file() {
             -e "s/^xkb_rules_layout=.*/xkb_rules_layout=$keyboard_layouts/" \
             -e "s/^xkb_rules_options=.*/xkb_rules_options=$keyboard_options/" "$dst"
     fi
+    if [ "$rel_path" = .config/mango/conf.d/30-binds-apps.conf ]; then
+        escaped_home=$(printf '%s\n' "$target_home" | sed 's/[\\&|]/\\&/g')
+        sed -i "s|~/.local/bin/|$escaped_home/.local/bin/|g" "$dst"
+    fi
     if [ "$monitor_selected" -eq 1 ] && [ "$primary_monitor" != DP-1 ]; then
         case "$rel_path" in
             .config/mango/conf.d/00-monitors.conf|.config/mango/conf.d/20-autostart.conf|.config/rs-yambar/config.toml|.config/rs-wwidget/config.toml|.local/bin/layout.sh)

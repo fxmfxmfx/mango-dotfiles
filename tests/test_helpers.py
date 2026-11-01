@@ -122,7 +122,10 @@ class HelperTests(unittest.TestCase):
         self.assertTrue((self.home / '.config/vesktop/themes/DesktopTheme.theme.css').is_file())
         self.assertTrue((self.home / 'Wallpaper/prism.png').is_file())
         autostart = (self.home / '.config/mango/conf.d/20-autostart.conf').read_text()
-        self.assertIn('exec-once=~/.local/bin/rs-wwidget start', autostart)
+        self.assertIn('exec_once=~/.local/bin/rs-wwidget start', autostart)
+        bindings = (self.home / '.config/mango/conf.d/30-binds-apps.conf').read_text()
+        self.assertIn(f'bind=SUPER,Return,spawn,{self.home}/.local/bin/themed-footclient', bindings)
+        self.assertNotIn('/home/trqwenyy/.local/bin/', bindings)
         self.assertFalse((self.home / '.local/share/fonts').exists())
         self.assertEqual((self.home / '.config/mango/conf.d/10-input.conf').read_text(),
                          (REPO / '.config/mango/conf.d/10-input.conf').read_text())

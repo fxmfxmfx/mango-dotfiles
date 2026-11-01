@@ -26,7 +26,7 @@ active_background = "#fabd2fff"
 occupied_foreground = "#ebdbb2ff"
 occupied_underline = "#fabd2fff"
 empty_foreground = "#a89984ff"
-on_click = "~/.config/yambar/scripts/view-tag.sh {index} {output}"
+on_click = "\"$HOME/.config/yambar/scripts/view-tag.sh\" {index} {output}"
 
 [[center]]
 type = "foreign-toplevel"
@@ -46,7 +46,7 @@ max-chars = 80
 [[right]]
 type = "script"
 name = "kblayout"
-command = ["sh", "-c", "\"$HOME/.config/yambar/scripts/kblayout.sh\""]
+command = ["sh", "-c", "exec \"$HOME/.config/yambar/scripts/kblayout.sh\""]
 mode = "poll"
 protocol = "yambar"
 interval_ms = 1000
